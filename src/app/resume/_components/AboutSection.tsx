@@ -4,7 +4,9 @@
  */
 
 import Image from 'next/image'
+import { CONTACT } from '@/lib/contact-info'
 import { YEARS_EXPERIENCE, YEARS_EXPERIENCE_LABEL } from '@/lib/stats'
+import { summary } from '../data/constants'
 
 export function AboutSection() {
   return (
@@ -27,14 +29,9 @@ export function AboutSection() {
           <div className="flex-1 text-center lg:text-left space-y-4">
             <h2 className="look-h3 border-none pb-0 mb-4">About</h2>
             <p>
-              {YEARS_EXPERIENCE} {YEARS_EXPERIENCE_LABEL} | Dallas-Fort Worth, TX
+              {YEARS_EXPERIENCE} {YEARS_EXPERIENCE_LABEL} | {CONTACT.location.display}
             </p>
-            <p>
-              Data and revenue operations professional with experience across digital marketing,
-              business systems, partner operations and analytics, after six years as an IT
-              specialist in the Texas Army National Guard. Proven expertise in developing SQL logic,
-              optimizing sales funnels and building automated systems that scale.
-            </p>
+            <p>{summary}</p>
           </div>
         </div>
       </div>

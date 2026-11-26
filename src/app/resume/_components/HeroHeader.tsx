@@ -8,16 +8,18 @@ import { Button } from '@/components/ui/button'
 import { FileDown, Mail, Globe, Eye } from 'lucide-react'
 import { Github, Linkedin } from '@/components/ui/brand-icons'
 import { AvailabilityBadge } from '@/components/ui/availability-badge'
+import { CONTACT, mailtoHref } from '@/lib/contact-info'
+import { headline } from '../data/constants'
 
 const socials = [
-  { label: 'Email', href: 'mailto:hudsor01@icloud.com', external: false, Icon: Mail },
+  { label: 'Email', href: mailtoHref, external: false, Icon: Mail },
   {
     label: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/hudsor01',
+    href: CONTACT.linkedin.url,
     external: true,
     Icon: Linkedin,
   },
-  { label: 'GitHub', href: 'https://github.com/hudsor01', external: true, Icon: Github },
+  { label: 'GitHub', href: CONTACT.github.url, external: true, Icon: Github },
   { label: 'Website', href: 'https://richardwhudsonjr.com', external: true, Icon: Globe },
 ]
 
@@ -47,7 +49,7 @@ export function HeroHeader({
           sections (About, Experience, Education, ...) are its H2s. */}
       <p className="look-h2 mx-auto mb-6 text-lg">
         <span className="inline-flex items-center rounded-full bg-primary/10 border border-border px-5 py-2 text-primary font-medium">
-          Revenue Operations Professional
+          {headline}
         </span>
       </p>
 

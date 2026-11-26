@@ -54,6 +54,20 @@ describe('resume copy says each thing once (B-14)', () => {
   })
 })
 
+describe('resume About block', () => {
+  afterEach(cleanup)
+
+  it('reads Dallas, TX on the About line and keeps the summary text', () => {
+    const { container } = render(<AboutSection />)
+    const paragraphs = Array.from(container.querySelectorAll('p')).map((p) => p.textContent)
+    expect(paragraphs[0]).toBe('10+ Years Experience | Dallas, TX')
+    expect(container.textContent).not.toContain('Dallas-Fort Worth')
+    expect(paragraphs[1]).toBe(
+      'Data and revenue operations professional with experience across digital marketing, business systems, partner operations and analytics, after six years as an IT specialist in the Texas Army National Guard. Proven expertise in developing SQL logic, optimizing sales funnels and building automated systems that scale.'
+    )
+  })
+})
+
 describe('resume hero pill (B-15)', () => {
   afterEach(cleanup)
 

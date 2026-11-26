@@ -64,4 +64,13 @@ describe('HeroHeader', () => {
       }
     }
   })
+
+  it('points social links at the contact details', () => {
+    render(<HeroHeader {...base} />)
+    const href = (label: string) => screen.getByLabelText(label).getAttribute('href')
+    expect(href('Email')).toBe('mailto:hudsor01@icloud.com')
+    expect(href('LinkedIn')).toBe('https://www.linkedin.com/in/hudsor01')
+    expect(href('GitHub')).toBe('https://github.com/hudsor01')
+    expect(href('Website')).toBe('https://richardwhudsonjr.com')
+  })
 })
