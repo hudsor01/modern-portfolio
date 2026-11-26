@@ -7,7 +7,6 @@ import {
   cuidSchema,
   phoneSchema,
   colorSchema,
-  metaDescriptionSchema,
   keywordsSchema,
   dateSchema,
   datetimeSchema,
@@ -21,6 +20,7 @@ import {
   createBlogPostSchema,
   createCategorySchema,
   createTagSchema,
+  cutMetaInput,
   updateBlogPostSchema,
   projectFilterSchema,
   viewTrackingSchema,
@@ -296,17 +296,32 @@ describe('colorSchema', () => {
   })
 })
 
-describe('metaDescriptionSchema', () => {
-  it('accepts strings up to 160 chars', () => {
-    expect(metaDescriptionSchema.safeParse('a'.repeat(160)).success).toBe(true)
+describe('cutMetaInput', () => {
+  it('returns input at or under the bound unchanged', () => {
+    expect(cutMetaInput('alpha beta', 10)).toBe('alpha beta')
   })
 
-  it('rejects strings over 160 chars', () => {
-    expect(metaDescriptionSchema.safeParse('a'.repeat(161)).success).toBe(false)
+  it('backs off to the last whitespace so a straddling word is dropped whole', () => {
+    expect(cutMetaInput('alpha beta gamma', 13)).toBe('alpha beta')
   })
 
-  it('accepts undefined', () => {
-    expect(metaDescriptionSchema.safeParse(undefined).success).toBe(true)
+  it('keeps the whole window when the bound lands on whitespace', () => {
+    expect(cutMetaInput('alpha beta gamma', 10)).toBe('alpha beta')
+  })
+
+  it('never leaves a cut HTML entity or markdown marker as literal text', () => {
+    expect(cutMetaInput('Real meta &nbsp;&nbsp;', 15)).toBe('Real meta')
+    expect(cutMetaInput('Real meta **bold**', 13)).toBe('Real meta')
+  })
+
+  it('never splits a surrogate pair', () => {
+    const cut = cutMetaInput(`${'x'.repeat(9)}\u{1F600}`, 10)
+    expect(cut).toBe('x'.repeat(9))
+    expect(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/.test(cut)).toBe(false)
+  })
+
+  it('falls back to a code-point-safe hard cut when the window has no whitespace', () => {
+    expect(cutMetaInput('x'.repeat(20), 12)).toBe('x'.repeat(12))
   })
 })
 
@@ -897,11 +912,11 @@ describe('blog metaDescription accepts a bio opener (the routes normalize it)', 
     }
   })
 
-  it.each([161, 1000, 5000])(
+  it.each([161, 1000, 5000, 100_001])(
     'accepts a %i-character meta on every schema (never rejected)',
     (length) => {
       const meta = 'x'.repeat(length)
-      const expected = 'x'.repeat(Math.min(length, 1000))
+      const expected = 'x'.repeat(Math.min(length, 100_000))
       const results = [
         createBlogPostSchema.safeParse({ ...base, metaDescription: meta }),
         updateBlogPostSchema.safeParse({ metaDescription: meta }),

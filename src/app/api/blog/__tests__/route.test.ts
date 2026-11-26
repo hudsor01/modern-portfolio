@@ -413,10 +413,32 @@ describe('POST /api/blog', () => {
     expect(stored.match(/…/g)?.length ?? 0).toBeLessThanOrEqual(1)
   })
 
+  it('stores the real text when a long run of entities precedes it', async () => {
+    const meta = `${'&nbsp;'.repeat(170)} Real meta description for the post.`
+    const res = await POST(reqPost({ ...validBody, metaDescription: meta }))
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription).toBe(
+      'Real meta description for the post.'
+    )
+  })
+
+  it('never stores a lone surrogate when an emoji sits on the 160 cut', async () => {
+    const meta = `${'word '.repeat(31)}wor\u{1F600} tail text after the cut`
+    const res = await POST(reqPost({ ...validBody, metaDescription: meta }))
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.metaDescription as string
+    expect(stored.length).toBeLessThanOrEqual(160)
+    expect(
+      /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(stored)
+    ).toBe(false)
+  })
+
   it('names the field when a meta is genuinely invalid (wrong type)', async () => {
     const res = await POST(reqPost({ ...validBody, metaDescription: 123 }))
     expect(res.status).toBe(400)
-    expect(await res.json()).toMatchObject({ success: false })
+    const body = await res.json()
+    expect(body).toMatchObject({ success: false })
+    expect(body.error).toMatch(/^Invalid request body: .*metaDescription/)
     expect(dbMocks.insertValues).not.toHaveBeenCalled()
   })
 

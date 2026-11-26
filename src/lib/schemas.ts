@@ -103,15 +103,35 @@ export const nullishText = (max: number, message?: string) =>
     ])
     .optional()
 
-// Memory bound for admin metaDescription input. Routes trim to the 160-char
-// column via blog-excerpt, so longer input is sliced here, never rejected.
-const META_INPUT_MAX = 1000
+// Bound on the metaDescription text the routes normalize. It matches the
+// content cap: the request body is already parsed by then, so this limits the
+// normalizer's work, not memory. Routes trim to the 160-char column via
+// blog-excerpt, so longer input is cut here, never rejected.
+const META_INPUT_MAX = 100_000
+
+/**
+ * Cuts `value` to at most `max` UTF-16 units without splitting a surrogate
+ * pair, backing off to the last whitespace inside the window so an entity,
+ * markdown marker or word straddling the bound is dropped whole rather than
+ * left as literal text.
+ */
+export function cutMetaInput(value: string, max: number): string {
+  if (value.length <= max) return value
+  let end = max
+  const last = value.charCodeAt(end - 1)
+  if (last >= 0xd800 && last <= 0xdbff) end -= 1
+  else if (/\s/.test(value[end] as string)) return value.slice(0, end)
+  for (let i = end - 1; i > 0; i--) {
+    if (/\s/.test(value[i] as string)) return value.slice(0, i)
+  }
+  return value.slice(0, end)
+}
 
 const truncatingNullishText = (max: number) =>
   z
     .union([
       z.literal('').transform(() => null),
-      z.string().transform((value) => value.slice(0, max)),
+      z.string().transform((value) => cutMetaInput(value, max)),
       z.null(),
     ])
     .optional()
@@ -214,15 +234,6 @@ export const phoneSchema = z
 export const colorSchema = z
   .string()
   .regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/, 'Must be a valid hex color')
-  .optional()
-
-// Meta description with proper character limits. Used by blog post
-// schemas (where it's wrapped as `.nullish()` to support PATCH-clear)
-// and by SEO event schemas elsewhere. Keep the `.optional()` form
-// here as the leaf primitive; nullability is composed at the use site.
-export const metaDescriptionSchema = z
-  .string()
-  .max(160, 'Meta description cannot exceed 160 characters')
   .optional()
 
 // Keywords array validation
@@ -341,7 +352,7 @@ const blogPostBaseShape = {
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
   metaTitle: nullishText(100),
-  // Bio-opener and over-long metas are accepted here (sliced to META_INPUT_MAX)
+  // Bio-opener and over-long metas are accepted here (cut to META_INPUT_MAX)
   // and normalized by the routes, never rejected: publishing cannot fail on them.
   metaDescription: truncatingNullishText(META_INPUT_MAX),
   keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
