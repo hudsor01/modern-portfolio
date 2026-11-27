@@ -20,7 +20,7 @@ export const CONTACT = {
     display: 'github.com/hudsor01',
     username: 'hudsor01',
   },
-  twitter: { url: 'https://twitter.com/hudsor01', handle: '@hudsor01', username: 'hudsor01' },
+  twitter: { url: 'https://x.com/hudsor01', handle: '@hudsor01', username: 'hudsor01' },
 } as const
 
 export const mailtoHref = `mailto:${CONTACT.email}`

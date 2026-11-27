@@ -41,7 +41,7 @@
   },
   {
     "source": "/twitter",
-    "destination": "https://twitter.com/hudsor01",
+    "destination": "https://x.com/hudsor01",
     "why": "Profile shortcut; destination must equal CONTACT.twitter.url, pinned by contact-info.test.ts. Moved from vercel.json."
   }
 ]

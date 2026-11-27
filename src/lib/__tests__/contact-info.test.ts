@@ -76,7 +76,7 @@ describe('CONTACT', () => {
     expect(CONTACT.linkedin.display).toBe('linkedin.com/in/hudsor01')
     expect(CONTACT.github.url).toBe('https://github.com/hudsor01')
     expect(CONTACT.github.display).toBe('github.com/hudsor01')
-    expect(CONTACT.twitter.url).toBe('https://twitter.com/hudsor01')
+    expect(CONTACT.twitter.url).toBe('https://x.com/hudsor01')
     expect(CONTACT.twitter.handle).toBe('@hudsor01')
     expect(CONTACT.github.username).toBe('hudsor01')
     expect(CONTACT.linkedin.username).toBe('hudsor01')
@@ -149,6 +149,7 @@ describe('contact details have one source', () => {
     'linkedin.com/in/hudsor01',
     'github.com/hudsor01',
     'twitter.com/hudsor01',
+    'x.com/hudsor01',
     '@hudsor01',
     'Based in Dallas',
     'Dallas, TX',
