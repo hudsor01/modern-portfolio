@@ -1,4 +1,5 @@
 // @vitest-environment node
+import * as pageStaticInfo from 'next/dist/build/analysis/get-page-static-info'
 import { getRelativeURL } from 'next/dist/shared/lib/router/utils/relativize-url'
 import { NextRequest } from 'next/server'
 import { describe, expect, it } from 'vitest'
@@ -7,6 +8,12 @@ import { RESUME_PDF_PATH } from '@/lib/resume-pdf'
 import { config, proxy } from '@/proxy'
 
 const ORIGIN = 'https://richardwhudsonjr.com'
+
+// The matcher compiler `next build` runs (exported at runtime, absent from the
+// published .d.ts). The 'runs the proxy on' tests fail loudly if it moves.
+const { getMiddlewareMatchers } = pageStaticInfo as unknown as {
+  getMiddlewareMatchers: (matcher: unknown, nextConfig: object) => Array<{ regexp: string }>
+}
 const run = (path: string) => proxy(new NextRequest(`${ORIGIN}${path}`))
 
 const SAME_ORIGIN_REDIRECTS: Array<[string, string]> = [
@@ -29,6 +36,7 @@ const SAME_ORIGIN_REDIRECTS: Array<[string, string]> = [
   ],
   ['/api/health/', `${ORIGIN}/api/health`],
   ['/llms.txt/', `${ORIGIN}/llms.txt`],
+  ['/favicon.ico/', `${ORIGIN}/favicon.ico`],
 ]
 
 const EXTERNAL_REDIRECTS: Array<[string, string]> = [
@@ -102,9 +110,25 @@ describe('proxy single-hop redirect', () => {
     expect(run(path).headers.get('location')).toBeNull()
   })
 
-  it('keeps the original matcher', () => {
+  it('keeps the matcher', () => {
     expect(config.matcher).toEqual([
-      '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf)$).*)',
+      '/((?!_next/static|_next/image|favicon\\.ico$|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf)$).*)',
     ])
+  })
+
+  // Compiled the way `next build` compiles it, so the exclusion is checked on
+  // real paths: only the exact static files skip the proxy.
+  it.each([
+    ['/favicon.ico', false],
+    ['/favicon.ico/', true],
+    ['/x.png', false],
+    ['/x.png/', true],
+    ['/_next/static/a.js', false],
+    ['/llms.txt/', true],
+    ['/about', true],
+    [RESUME_PDF_PATH, false],
+  ])('runs the proxy on %s: %s', (path, runs) => {
+    const [matcher] = getMiddlewareMatchers(config.matcher, {})
+    expect(new RegExp(matcher?.regexp ?? '$^').test(path)).toBe(runs)
   })
 })
