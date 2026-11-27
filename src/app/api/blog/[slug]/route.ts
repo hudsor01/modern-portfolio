@@ -214,7 +214,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       ...(body.content && { content: body.content, wordCount, readingTime }),
       ...(body.contentType && { contentType: body.contentType }),
       ...(body.status && { status: body.status }),
-      // Same ≤ 43-char rule as POST; a cleared (null) SEO title is derived
+      // Same title rule as POST; a cleared (null) SEO title is derived
       // from the post title. Normalized, never rejected.
       ...(body.metaTitle !== undefined && {
         metaTitle: normalizeSeoTitle(body.metaTitle, body.title || existingPost.title),

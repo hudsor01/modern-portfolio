@@ -13,7 +13,8 @@ import { db } from '@/lib/db'
 import { blogPosts, categories } from '@/db/schema'
 import { createContextLogger } from '@/lib/logger'
 import { canonicalUrl, ogImageUrl, SITE_ORIGIN } from '@/lib/absolute-url'
-import { brandTitle } from '@/lib/brand'
+import { displayPostTitle } from '@/lib/brand'
+import { resolveSeoTitle, seoTitleMetadata } from '@/lib/post-title'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { resolveExcerpt } from '@/lib/blog-excerpt'
 import { CATEGORY_CHIP_CLASSES, resolveListCovers } from '@/lib/blog-list'
@@ -104,7 +105,12 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     notFound()
   }
 
-  const title = `${category.name}: Articles`
+  // Same budgeted rule as post titles (src/lib/post-title.ts): branded when it
+  // fits with the brand, the full title alone when it fits only without it,
+  // else a whole-word cut, so a long category name can't overrun 60 chars.
+  const { title, shareTitle } = seoTitleMetadata(
+    resolveSeoTitle(null, `${category.name}: Articles`)
+  )
   const base =
     category.description ||
     `Articles about ${category.name} from Richard Hudson's revenue operations blog.`
@@ -122,7 +128,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     title,
     description,
     openGraph: {
-      title: brandTitle(title),
+      title: shareTitle,
       description,
       url: canonicalUrl(`/blog/category/${category.slug}`),
       siteName: 'Richard Hudson',
@@ -131,7 +137,7 @@ export async function generateMetadata({ params }: BlogCategoryPageProps): Promi
     },
     twitter: {
       card: 'summary_large_image',
-      title: brandTitle(title),
+      title: shareTitle,
       description,
       images: [ogImage],
     },
@@ -158,7 +164,8 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
     category.posts.map((p) => ({
       id: p.id,
       slug: p.slug,
-      title: p.title,
+      // A stored brand suffix never shows on a visible title.
+      title: displayPostTitle(p.title),
       featuredImage: p.featuredImage,
       publishedAt: p.publishedAt,
       excerpt: resolveExcerpt({ excerpt: p.excerpt, content: p.contentHead }) || null,

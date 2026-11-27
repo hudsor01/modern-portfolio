@@ -48,4 +48,14 @@ describe('RelatedPosts excerpts', () => {
     expect(all.join(' ')).not.toContain('National Guard')
     expect(all.join(' ')).not.toContain('# H')
   })
+
+  it('shows a related title without a stored brand suffix', async () => {
+    mocks.findMany.mockResolvedValue([
+      { ...row('a', 'A normal excerpt.'), title: 'Pipeline Velocity | Richard Hudson' },
+    ])
+    const tree = await RelatedPosts({ currentSlug: 'x', currentTags: ['Forecasting'] })
+    const all = texts(tree)
+    expect(all).toContain('Pipeline Velocity')
+    expect(all.join(' ')).not.toContain('Richard Hudson')
+  })
 })

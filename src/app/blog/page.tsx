@@ -150,7 +150,8 @@ function toListPost(row: CardRow): BlogListPost {
   return {
     id: row.id,
     slug: row.slug,
-    title: row.title,
+    // A stored brand suffix never shows on a visible title.
+    title: displayPostTitle(row.title),
     excerpt: resolveExcerpt({ excerpt: row.excerpt, content: row.contentHead }) || null,
     featuredImage: row.featuredImage,
     publishedAt: row.publishedAt?.toISOString() ?? null,

@@ -303,6 +303,38 @@ describe('every route', () => {
     expect(meta && resolveTitle(meta)).toBe('Mock Post | Richard Hudson')
   })
 
+  it('renders a title that fits only without the brand unbranded on all three surfaces', async () => {
+    const saved = {
+      title: mocks.post.title,
+      metaTitle: mocks.post.metaTitle,
+      name: mocks.post.name,
+    }
+    mocks.post.title = 'Running an MDF Program Finance Can Actually Trust'
+    mocks.post.metaTitle = mocks.post.title
+    mocks.post.name = 'Revenue Operations and Sales Technology'
+    try {
+      for (const key of [
+        '/src/app/blog/[slug]/page.tsx',
+        '/src/app/blog/category/[slug]/page.tsx',
+      ]) {
+        const mod = await modules[key]?.()
+        const meta = await mod?.generateMetadata?.({
+          params: Promise.resolve({ slug: 'mock-post' }),
+          searchParams: Promise.resolve({}),
+        })
+        if (!meta) throw new Error(`${key}: no metadata`)
+        const title = resolveTitle(meta)
+        expect(meta.title, key).toHaveProperty('absolute')
+        expect(countBrand(title), key).toBe(0)
+        expect(title.length, key).toBeLessThanOrEqual(60)
+        expect(textOf(meta.openGraph?.title), key).toBe(title)
+        expect(textOf(meta.twitter?.title), key).toBe(title)
+      }
+    } finally {
+      Object.assign(mocks.post, saved)
+    }
+  })
+
   it('home title is absolute and exact', async () => {
     const mod = await modules['/src/app/page.tsx']?.()
     expect(mod?.metadata && resolveTitle(mod.metadata)).toBe(

@@ -14,12 +14,11 @@ import { db } from '@/lib/db'
 import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
-import { brandTitle } from '@/lib/brand'
 import { resolveMetaDescription, resolvePostLede } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { displayPostTitle } from '@/lib/brand'
-import { normalizeSeoTitle } from '@/lib/post-title'
+import { resolveSeoTitle, seoTitleMetadata } from '@/lib/post-title'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the
@@ -136,14 +135,16 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const ogImageAlt = ogImage.isFallback ? cardTitle : post.featuredImageAlt || cardTitle
 
   const postUrl = canonicalUrl(`/blog/${post.slug}`)
-  // One canonical normalized title (src/lib/post-title.ts, the same rule applied
-  // on write) feeds <title> (the root template appends the brand), og:title and
-  // twitter:title, so legacy stored values render within the 60-char budget and
-  // shared previews show the short SEO title (intended).
-  const baseTitle = normalizeSeoTitle(post.metaTitle, post.title) || 'Blog'
-  const shareTitle = brandTitle(baseTitle)
+  // One canonical resolved title (src/lib/post-title.ts, the same rule applied
+  // on write) feeds <title>, og:title and twitter:title, so legacy stored values
+  // render within the 60-char budget: branded via the root template, or the
+  // full post title as `{ absolute }` when it fits only without the brand.
+  const resolved = resolveSeoTitle(post.metaTitle, post.title)
+  const { title, shareTitle } = seoTitleMetadata(
+    resolved.text ? resolved : { text: 'Blog', branded: true }
+  )
   return {
-    title: baseTitle,
+    title,
     description: post.metaDescription,
     openGraph: {
       title: shareTitle,

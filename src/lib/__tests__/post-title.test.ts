@@ -2,8 +2,18 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
-import { brandTitle, displayPostTitle } from '@/lib/brand'
-import { normalizeSeoTitle, SEO_TITLE_MAX, TITLE_BUDGET } from '@/lib/post-title'
+import { brandTitle, displayPostTitle, stripBrandSuffix } from '@/lib/brand'
+import {
+  normalizeSeoTitle,
+  resolveSeoTitle,
+  SEO_TITLE_MAX,
+  type SeoTitle,
+  seoTitleMetadata,
+  TITLE_BUDGET,
+} from '@/lib/post-title'
+
+/** What a search result shows for a resolved title. */
+const rendered = (t: SeoTitle) => (t.branded ? brandTitle(t.text) : t.text)
 
 describe('normalizeSeoTitle', () => {
   it('fits every stored SEO title within the budget', () => {
@@ -54,13 +64,19 @@ describe('normalizeSeoTitle', () => {
     const inputs = [
       'x'.repeat(200),
       'One two three four five six seven eight nine ten eleven twelve thirteen',
-      'Colon Head Too Long To Be Useful As A Title On Its Own: tail',
+      'Colon Head Too Long To Be Useful As A Title On Its Own: tail and more',
     ]
     for (const s of inputs) {
       const out = normalizeSeoTitle(s, s)
       expect(out.length).toBeGreaterThan(0)
       expect(out.length).toBeLessThanOrEqual(43)
     }
+  })
+
+  it('stores a full title that fits only without the brand whole', () => {
+    const t = 'Running an MDF Program Finance Can Actually Trust'
+    expect(normalizeSeoTitle(null, t)).toBe(t)
+    expect(normalizeSeoTitle(t, t)).toBe(t)
   })
 
   it('never splits a word: the cut output is whole leading words of the input', () => {
@@ -79,7 +95,7 @@ describe('normalizeSeoTitle', () => {
     expect(brandTitle(out)).toHaveLength(59)
   })
 
-  it('keeps every branded result within the budget for generated inputs', () => {
+  it('keeps every rendered result within the budget for generated inputs', () => {
     const words = 'alpha beta gamma delta epsilon zeta eta theta iota kappa lambda'.split(' ')
     const make = (n: number) => {
       let out = ''
@@ -98,7 +114,25 @@ describe('normalizeSeoTitle', () => {
         make(120),
         `${make(25)}: ${make(60)}`,
       ]) {
-        expect(brandTitle(normalizeSeoTitle(m, t)).length).toBeLessThanOrEqual(TITLE_BUDGET)
+        const r = resolveSeoTitle(m, t)
+        expect(rendered(r).length).toBeLessThanOrEqual(TITLE_BUDGET)
+        // Unbranded only for the whole post title, and only when it can't carry the brand.
+        if (!r.branded) {
+          expect(r.text).toBe(stripBrandSuffix(t))
+          expect(brandTitle(r.text).length).toBeGreaterThan(TITLE_BUDGET)
+        }
+        // A cut is always whole leading words of its source (never mid-word).
+        if (r.branded && r.text !== stripBrandSuffix(t) && r.text !== stripBrandSuffix(m ?? '')) {
+          const source = [stripBrandSuffix(m ?? ''), stripBrandSuffix(t)].find(
+            (x) =>
+              `${x} `.startsWith(`${r.text} `) ||
+              x.startsWith(`${r.text}:`) ||
+              x.startsWith(`${r.text} (`)
+          )
+          expect(source, `${r.text} from ${m} / ${t}`).toBeDefined()
+        }
+        // Idempotent: what the write path stores resolves to the same title.
+        expect(resolveSeoTitle(r.text, t)).toEqual(r)
       }
     }
   })
@@ -111,8 +145,9 @@ describe('normalizeSeoTitle', () => {
       )
 
     it('never splits a surrogate pair', () => {
-      // 30 × '😀' is 60 UTF-16 units; a slice(0, 43) would end in a lone high surrogate.
-      const out = normalizeSeoTitle(null, '😀'.repeat(30))
+      // 31 × '😀' is 62 UTF-16 units (past the budget, so it is cut); a
+      // slice(0, 43) would end in a lone high surrogate.
+      const out = normalizeSeoTitle(null, '😀'.repeat(31))
       expect(isWellFormed(out)).toBe(true)
       expect(out).toBe('😀'.repeat(21))
       expect(out.length).toBeLessThanOrEqual(SEO_TITLE_MAX)
@@ -133,7 +168,7 @@ describe('normalizeSeoTitle', () => {
     })
 
     it('keeps a combining mark with its base letter', () => {
-      const out = normalizeSeoTitle(null, `${'a'.repeat(42)}e\u0301tail`)
+      const out = normalizeSeoTitle(null, `${'a'.repeat(42)}e\u0301${'t'.repeat(20)}`)
       expect(out).toBe('a'.repeat(42))
     })
 
@@ -143,10 +178,56 @@ describe('normalizeSeoTitle', () => {
     })
 
     it('stays within the brand budget with an emoji at the cut', () => {
-      const out = normalizeSeoTitle(`${'😀'.repeat(30)} tail`, 'x'.repeat(50))
+      const out = normalizeSeoTitle(`${'😀'.repeat(30)} tail`, 'x'.repeat(70))
       expect(isWellFormed(out)).toBe(true)
       expect(brandTitle(out).length).toBeLessThanOrEqual(TITLE_BUDGET)
     })
+  })
+})
+
+describe('resolveSeoTitle', () => {
+  const MDF = 'Running an MDF Program Finance Can Actually Trust'
+
+  it('renders a title that fits alone but not with the brand in full, unbranded', () => {
+    for (const meta of [null, MDF, `${MDF} | Richard Hudson`]) {
+      expect(resolveSeoTitle(meta, MDF)).toEqual({ text: MDF, branded: false })
+    }
+    expect(seoTitleMetadata(resolveSeoTitle(null, MDF))).toEqual({
+      title: { absolute: MDF },
+      shareTitle: MDF,
+    })
+  })
+
+  it('keeps an explicit SEO title that fits with the brand', () => {
+    const r = resolveSeoTitle('MDF Programs Finance Trusts', MDF)
+    expect(r).toEqual({ text: 'MDF Programs Finance Trusts', branded: true })
+    expect(seoTitleMetadata(r)).toEqual({
+      title: 'MDF Programs Finance Trusts',
+      shareTitle: 'MDF Programs Finance Trusts | Richard Hudson',
+    })
+  })
+
+  it('brands a title that fits with the brand', () => {
+    expect(resolveSeoTitle(null, 'Short Post Title')).toEqual({
+      text: 'Short Post Title',
+      branded: true,
+    })
+  })
+
+  it('takes the unbranded path at exactly the budget and the branded chain past it', () => {
+    const sixty = `${'Pipeline '.repeat(6)}Velocity Benchmarks`.slice(0, 60).trim()
+    expect(sixty).toHaveLength(60)
+    expect(resolveSeoTitle(null, sixty).branded).toBe(false)
+    const sixtyOne = `${sixty}s`
+    const r = resolveSeoTitle(null, sixtyOne)
+    expect(r.branded).toBe(true)
+    expect(brandTitle(r.text).length).toBeLessThanOrEqual(TITLE_BUDGET)
+  })
+
+  it('never emits the brand twice or an empty title', () => {
+    const r = resolveSeoTitle(null, `${MDF} | Richard Hudson`)
+    expect(r.text).not.toContain('Richard Hudson')
+    expect(resolveSeoTitle(null, 'x').text).toBe('x')
   })
 })
 
@@ -284,7 +365,7 @@ describe('browser safety', () => {
     vi.stubGlobal('Intl', Object.assign(Object.create(Intl), { Segmenter: undefined }))
     try {
       const { normalizeSeoTitle: cut } = await import('@/lib/post-title')
-      const word = `${'a'.repeat(42)}😀tail`
+      const word = `${'a'.repeat(42)}😀${'t'.repeat(20)}`
       const out = cut(word, word)
       expect(out.length).toBeLessThanOrEqual(SEO_TITLE_MAX)
       expect(out).not.toMatch(/[\uD800-\uDBFF]$/)

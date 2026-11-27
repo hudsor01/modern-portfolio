@@ -258,9 +258,11 @@ export async function POST(request: NextRequest) {
         // (via nullishText / featuredImageSchema), so no per-field
         // `|| null` coalesce is needed here. The DB always sees null
         // for cleared fields — single canonical state.
-        // Stored ≤ 43 chars so `<metaTitle> | Richard Hudson` fits search
-        // results; derived from the title when the pipeline sends none or
-        // too long a one. Normalized, never rejected, so publishing can't fail.
+        // Stored so the rendered title fits search results (60 chars):
+        // ≤ 43 chars for `<metaTitle> | Richard Hudson`, or the full post title
+        // when it fits only without the brand; derived from the title when the
+        // pipeline sends none or too long a one. Normalized, never rejected,
+        // so publishing can't fail.
         metaTitle: normalizeSeoTitle(body.metaTitle, body.title),
         metaDescription: seoText.metaDescription,
         keywords: body.keywords,

@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { blogPosts } from '@/db/schema'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { resolveExcerpt } from '@/lib/blog-excerpt'
+import { displayPostTitle } from '@/lib/brand'
 import { createContextLogger } from '@/lib/logger'
 import { selectRelatedPosts, type RelatedPostInput } from './related-posts-utils'
 
@@ -61,7 +62,8 @@ export async function RelatedPosts({ currentSlug, currentTags, limit = 3 }: Rela
 
   const candidates: (RelatedPostInput & { excerpt: string | null })[] = posts.map((p) => ({
     slug: p.slug,
-    title: p.title,
+    // A stored brand suffix never shows on a visible title.
+    title: displayPostTitle(p.title),
     tags: (p.tags ?? []).map((t) => t?.tag?.name).filter((n): n is string => !!n),
     publishedAt: p.publishedAt?.toISOString() ?? '1970-01-01',
     excerpt: resolveExcerpt({ excerpt: p.excerpt, content: p.contentHead }) || null,

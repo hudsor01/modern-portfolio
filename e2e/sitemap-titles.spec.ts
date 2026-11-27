@@ -1,7 +1,24 @@
 import { expect, test } from '@playwright/test'
 import { databaseAvailable } from './_helpers/database'
 
-/** BUG-04 guard: every sitemap URL's <title> carries the brand exactly once. */
+/**
+ * BUG-04 guard: every sitemap URL's <title> carries the brand exactly once.
+ * The one exception (src/lib/post-title.ts): a blog post or category title
+ * that fits the 60-char budget only without " | Richard Hudson" renders whole
+ * and unbranded, so a search result never shows a word-cut title.
+ */
+const TITLE_BUDGET = 60
+const BRAND_SUFFIX_LENGTH = ' | Richard Hudson'.length
+const BLOG_TITLE_PATH = /^\/blog\/(?:category\/)?[^/]+$/
+
+function isFullUnbrandedTitle(path: string, title: string): boolean {
+  return (
+    BLOG_TITLE_PATH.test(path) &&
+    !title.includes(' | ') &&
+    title.length <= TITLE_BUDGET &&
+    title.length + BRAND_SUFFIX_LENGTH > TITLE_BUDGET
+  )
+}
 
 const BRAND = 'Richard Hudson'
 const HOME_TITLE = 'Richard Hudson | RevOps Professional in Dallas-Fort Worth'
@@ -37,6 +54,7 @@ test('every sitemap URL has a single-brand title', async ({ request }, testInfo)
     const match = (await response.text()).match(/<title[^>]*>([\s\S]*?)<\/title>/)
     const title = decode((match?.[1] ?? '').trim())
     const brandCount = title.split(BRAND).length - 1
+    if (brandCount === 0 && isFullUnbrandedTitle(path, title)) continue
     if (brandCount !== 1) failures.push(`${path}: brand x${brandCount} in "${title}"`)
     if (path === '/') {
       if (title !== HOME_TITLE) failures.push(`/: title "${title}" != "${HOME_TITLE}"`)
