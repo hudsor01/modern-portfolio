@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { asc, desc, eq, ilike, or, type SQL } from 'drizzle-orm'
 import type { ApiResponse, BlogTagData } from '@/types/api'
 import { createContextLogger } from '@/lib/logger'
-import { fitMetaDescription } from '@/lib/blog-excerpt'
+import { fitMetaDescription, fitStoredText, STORED_TEXT_LIMITS } from '@/lib/blog-excerpt'
 import { db } from '@/lib/db'
 import { tags } from '@/db/schema'
 import { generateSlug, createErrorResponse, transformToTagData } from '@/lib/api-blog'
@@ -97,7 +97,8 @@ export async function POST(request: NextRequest) {
       .values({
         name: body.name,
         slug,
-        description: body.description ?? null,
+        description:
+          fitStoredText(body.description, STORED_TEXT_LIMITS.taxonomyDescription) ?? null,
         color: body.color,
         metaDescription: fitMetaDescription(body.metaDescription) ?? null,
         postCount: 0,

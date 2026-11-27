@@ -26,6 +26,7 @@ vi.mock('@/lib/logger', () => ({
 }))
 
 import { GET } from '@/app/api/blog/rss/route'
+import { resolvePostLede } from '@/lib/blog-excerpt'
 
 const fakePosts = [
   {
@@ -165,6 +166,40 @@ describe('GET /api/blog/rss', () => {
       '<description>Forecast accuracy depends on clean pipeline stages and honest close dates.</description>'
     )
     expect(xml).not.toContain('National Guard')
+  })
+
+  // The page-vs-feed equality is pinned in src/app/blog/[slug]/__tests__/post-metadata.test.ts.
+  it('description is resolvePostLede over the bounded contentHead', async () => {
+    const para =
+      'Forecast accuracy depends on clean pipeline stages and honest close dates across every region of the business.'
+    const body = `${'😀 filler words\n\n'.repeat(300)}${para}\n\nMore text.`
+    const contentHead = Array.from(body).slice(0, 4000).join('')
+    const row = {
+      ...fakePosts[0],
+      excerpt: null,
+      metaDescription: 'A meta fallback description.',
+      contentHead,
+    }
+    dbMocks.findMany.mockResolvedValue([row])
+    const xml = await (await GET(req())).text()
+    const lede = resolvePostLede({
+      excerpt: null,
+      content: body,
+      metaDescription: row.metaDescription,
+    })
+    expect(lede.length).toBeGreaterThan(0)
+    expect(xml).toContain(`<description>${lede}</description>`)
+  })
+
+  it('drops a stored brand suffix from item titles', async () => {
+    dbMocks.findMany.mockResolvedValue([
+      { ...fakePosts[0], title: 'Pipeline Velocity Explained | Richard Hudson', contentHead: '' },
+    ])
+    const xml = await (await GET(req())).text()
+    expect(xml).toContain('<title>Pipeline Velocity Explained</title>')
+    expect(xml).not.toContain('Explained | Richard Hudson')
+    const json = await (await GET(req('?format=json'))).json()
+    expect(json.data.posts[0].title).toBe('Pipeline Velocity Explained')
   })
 
   it('renders an empty description when every source is bio boilerplate', async () => {

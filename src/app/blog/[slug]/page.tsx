@@ -14,11 +14,12 @@ import { db } from '@/lib/db'
 import { withDbRetry } from '@/lib/db-retry'
 import { blogPosts } from '@/db/schema'
 import { canonicalUrl } from '@/lib/absolute-url'
-import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
-import { LEDE_MAX, resolveExcerpt, resolveMetaDescription } from '@/lib/blog-excerpt'
+import { brandTitle } from '@/lib/brand'
+import { resolveMetaDescription, resolvePostLede } from '@/lib/blog-excerpt'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
-import { postDocumentTitle } from '@/lib/post-title'
+import { displayPostTitle } from '@/lib/brand'
+import { normalizeSeoTitle } from '@/lib/post-title'
 
 // Force runtime rendering. notFound() inside Next.js 16's ISR-rendered
 // Server Components doesn't propagate HTTP 404 status to Vercel — the
@@ -69,10 +70,11 @@ const getBlogPost = cache(async (slug: string): Promise<BlogPostData | null> => 
     if (post.deletedAt) return null
 
     const data = transformToBlogPostData(post)
-    const lede = resolveExcerpt(
-      { excerpt: data.excerpt, content: data.content },
-      { maxLength: LEDE_MAX }
-    )
+    const lede = resolvePostLede({
+      excerpt: data.excerpt,
+      content: data.content,
+      metaDescription: data.metaDescription,
+    })
     const meta = resolveMetaDescription({
       metaDescription: data.metaDescription,
       excerpt: data.excerpt,
@@ -120,8 +122,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   // `category` flows through to /api/og when isFallback so the card
   // still renders the bronze category badge (the same `?category=…`
   // param that the pre-helper hand-rolled URL passed).
+  // Full title without a stored brand suffix: the card is not a search title.
+  const cardTitle = displayPostTitle(post.title)
   const ogImage = safeFeaturedImageUrl(post.featuredImage, {
-    title: post.title,
+    title: cardTitle,
     subtitle: 'Blog Post',
     category: post.category?.name,
   })
@@ -129,14 +133,15 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   // stored featuredImageAlt describes the absent hero (not the card),
   // so it's a misleading alt for screen readers / unfurlers. Use the
   // title — which is the visible text on the /api/og card.
-  const ogImageAlt = ogImage.isFallback ? post.title : post.featuredImageAlt || post.title
+  const ogImageAlt = ogImage.isFallback ? cardTitle : post.featuredImageAlt || cardTitle
 
   const postUrl = canonicalUrl(`/blog/${post.slug}`)
-  // Root template appends the brand; DB titles may already carry it. A metaTitle
-  // too long to survive search-result truncation with the brand gives way to the
-  // shorter post title (src/lib/post-title.ts).
-  const baseTitle = postDocumentTitle(post.metaTitle, post.title)
-  const shareTitle = brandTitle(stripBrandSuffix(post.title) || baseTitle)
+  // One canonical normalized title (src/lib/post-title.ts, the same rule applied
+  // on write) feeds <title> (the root template appends the brand), og:title and
+  // twitter:title, so legacy stored values render within the 60-char budget and
+  // shared previews show the short SEO title (intended).
+  const baseTitle = normalizeSeoTitle(post.metaTitle, post.title) || 'Blog'
+  const shareTitle = brandTitle(baseTitle)
   return {
     title: baseTitle,
     description: post.metaDescription,
@@ -188,7 +193,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         items={[
           { name: 'Home', url: canonicalUrl('/') },
           { name: 'Blog', url: canonicalUrl('/blog') },
-          { name: post.title, url: canonicalUrl(`/blog/${post.slug}`) },
+          { name: displayPostTitle(post.title), url: canonicalUrl(`/blog/${post.slug}`) },
         ]}
       />
       <div className="min-h-screen bg-background">

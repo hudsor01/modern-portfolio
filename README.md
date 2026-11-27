@@ -103,8 +103,8 @@ at runtime, and CI's `build` job in [`.github/workflows/ci.yml`](.github/workflo
 .
 ├── src/
 │   ├── app/                 # App Router routes + API handlers
-│   │   ├── api/             # 16 route handlers (contact, blog, projects,
-│   │   │                    #   og, health, seed, security/metrics, …)
+│   │   ├── api/             # 17 route files (contact, blog, projects,
+│   │   │                    #   og, health, seed, cron, security/metrics, …)
 │   │   ├── about/ blog/ contact/ projects/ resume/
 │   │   └── layout.tsx, page.tsx, error.tsx, sitemap.ts, robots.ts, …
 │   ├── components/          # ui (shadcn + Radix), layout, navigation, charts,
@@ -113,23 +113,24 @@ at runtime, and CI's `build` job in [`.github/workflows/ci.yml`](.github/workflo
 │   ├── db/                  # Drizzle schema, client (lazy proxy), cuid2 factory
 │   ├── lib/                 # env-validation, logger, schemas, csp-edge, csrf,
 │   │                        #   rate-limiter, email-service, data-service, …
+│   ├── proxy.ts             # Next.js 16 proxy (replaces middleware.ts): CSP + nonce, and
+│   │                        #   one-hop lowercase / trailing-slash / redirect-table 308s
 │   ├── hooks/               # React hooks
 │   ├── types/               # Shared TypeScript types
-│   ├── data/                # Static catalog (project case-study data)
-│   └── styles/              # Tailwind globals + helpers
+│   ├── data/                # Static catalog (project case-study data) + redirect
+│   │                        #   tables (redirects.json, blog-slug-renames.json,
+│   │                        #   blog-retired-slugs.json)
 ├── drizzle/
 │   ├── migrations/          # drizzle-kit output (SQL)
 │   └── seed.ts              # Idempotent seed
-├── e2e/                     # 5 Playwright specs
-├── docs/                    # Project notes
+├── e2e/                     # 36 Playwright specs
 ├── public/
-├── proxy.ts                 # Next.js 16 root proxy (replaces middleware.ts)
 ├── instrumentation.ts       # Next.js instrumentation (Sentry server bootstrap)
 ├── instrumentation-client.ts# Sentry client bootstrap
-├── sentry.{client,server,edge}.config.ts
+├── sentry.{server,edge}.config.ts, sentry.shared.ts
 ├── next.config.js
 ├── drizzle.config.ts
-└── vercel.json              # framework, buildCommand, redirects
+└── vercel.json              # framework, buildCommand, regions, crons
 ```
 
 Path aliases (`tsconfig.json`): `@/*` → `src/*`, plus shortcuts for
@@ -167,6 +168,7 @@ Public:
 - `GET /api/health` · `GET /api/health-check` — DB ping / probe text
 - `GET, POST /api/blog` — list / create posts
 - `GET, PUT, DELETE /api/blog/[slug]`
+- `POST /api/blog/[slug]/view` — view-count beacon (204 always)
 - `GET /api/blog/rss` — RSS 2.0 XML by default (the autodiscovery target); JSON via `?format=json`
 - `GET, POST /api/blog/tags` · `GET, POST /api/blog/categories`
 - `GET /api/blog/analytics`
@@ -180,9 +182,13 @@ Token-gated:
   compare); returns 404 in production unless `ALLOW_SEED_IN_PRODUCTION='true'`
 - `GET /api/security/metrics` — `X-Metrics-Token: $METRICS_API_TOKEN`;
   exports rate-limiter metrics
+- `GET /api/cron/publish-scheduled` · `GET /api/cron/purge-contact-submissions` —
+  `Authorization: Bearer $CRON_SECRET` (Vercel Cron)
 
 CSRF (`x-csrf-token` header matching the `__csrf_token` cookie) is enforced on
-mutating `/api/blog*` and `/api/contact` routes.
+mutating `/api/blog*` and `/api/contact` routes, except the
+`POST /api/blog/[slug]/view` beacon (`sendBeacon` cannot set headers; it is
+rate-limited and only increments an anonymous counter).
 
 ---
 
@@ -191,6 +197,7 @@ mutating `/api/blog*` and `/api/contact` routes.
 See [SECURITY.md](SECURITY.md) for the full posture and how to report
 vulnerabilities. Summary:
 
+- **Redirects** resolve in [`src/proxy.ts`](src/proxy.ts) via `resolveSingleHop`, one 308 each, from `src/data/redirects.json` plus the two blog slug maps (built by `src/lib/redirect-table.mjs`, shared with `next.config.js`); `vercel.json` holds none
 - **CSP** built per request in [`src/proxy.ts`](src/proxy.ts) from [`src/lib/csp-edge.ts`](src/lib/csp-edge.ts) (`script-src 'self' 'unsafe-inline'`: a nonce is incompatible with static prerendering — see SECURITY.md)
 - **CSRF** on mutating API routes — [`src/lib/csrf-protection.ts`](src/lib/csrf-protection.ts) · [`src/lib/api-csrf.ts`](src/lib/api-csrf.ts)
 - **Rate limiting** — [`src/lib/rate-limiter/`](src/lib/rate-limiter/) (in-memory store with progressive backoff)
@@ -215,8 +222,7 @@ vulnerabilities. Summary:
 - **Unit / integration** — Vitest (`bun test`), jsdom, suite runs in
   ~500 ms (Lefthook gates pre-push on it)
 - **E2E** — Playwright with Chromium by default; axe-core accessibility
-  checks. 5 specs in [`e2e/`](e2e/) (blog, contact-form, projects,
-  resume, security-headers)
+  checks. 36 specs in [`e2e/`](e2e/)
 - **Pre-push hook** ([`lefthook.yml`](lefthook.yml)) runs
   `bunx vitest run --passWithNoTests`. Bypass with `git push --no-verify`
   when intentional and verifiable.

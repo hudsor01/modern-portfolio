@@ -1,4 +1,4 @@
-import { brandTitle } from '@/app/shared-metadata'
+import { brandTitle } from '@/lib/brand'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getProjects, getProject } from '@/lib/projects'

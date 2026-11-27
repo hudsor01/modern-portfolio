@@ -7,6 +7,7 @@
 
 import { z } from 'zod'
 import { postStatus, contentType } from '@/db/schema'
+import { fitKeywords } from '@/lib/blog-excerpt'
 import { FEATURED_IMAGE_ALLOWED_HOSTS } from './featured-image-hosts'
 
 // Zod 4 probes `new Function('')` at schema construction to decide whether to
@@ -139,6 +140,14 @@ const truncatingNullishText = (max: number) =>
       z.null(),
     ])
     .optional()
+
+// Keywords are normalized, never rejected: fitKeywords trims, drops empties, cuts
+// each item to 50 chars and keeps the first 10. There is no item-count cap: a
+// .max() would turn an over-long list back into a 400 on SEO text, the class of
+// failure this normalization exists to remove. Instead no item gets per-item
+// work in Zod (only the string type check), and fitKeywords stops reading once
+// it has kept 10, so a huge list costs one pass of type checks.
+const keywordsInput = z.array(z.string()).transform(fitKeywords)
 
 /**
  * URL-flavoured sibling of `nullishText`. Accepts undefined / null /
@@ -340,6 +349,12 @@ export const contactFormSchema = z
 //
 // All shared validation rules (length caps, the host-allowlist on
 // image URLs, slug/cuid formats) live in this base shape exactly once.
+//
+// Normalized, never rejected: every SEO/descriptive text field (excerpt, meta*,
+// og*/twitter* text, featuredImageAlt, taxonomy description, keywords) — routes
+// fit them with blog-excerpt helpers. Still rejected: title, tag/category name,
+// category icon, slugs, ids, URLs, status/dates and unknown fields — identity or
+// genuinely invalid input a pipeline must fix, not SEO text.
 const blogPostBaseShape = {
   title: z.string().min(1, 'Title is required').max(200, 'Title cannot exceed 200 characters'),
   content: z
@@ -352,7 +367,7 @@ const blogPostBaseShape = {
   // than each handler call site doing its own `|| null` dance). See
   // `nullishText` definition above for the partial-unique-index
   // collision rationale.
-  excerpt: nullishText(500),
+  excerpt: truncatingNullishText(META_INPUT_MAX),
   contentType: ContentTypeSchema,
   status: PostStatusSchema,
   metaTitle: truncatingNullishText(META_INPUT_MAX),
@@ -360,19 +375,19 @@ const blogPostBaseShape = {
   // (cut to META_INPUT_MAX) and normalized by the routes, never rejected:
   // publishing cannot fail on them.
   metaDescription: truncatingNullishText(META_INPUT_MAX),
-  keywords: z.array(z.string().min(1).max(50)).max(10, 'Cannot have more than 10 keywords'),
+  keywords: keywordsInput,
   canonicalUrl: nullishUrl(),
   // Social card image fields reuse featuredImageSchema — same host
   // allowlist applies because these get scraped by Twitter/Facebook
   // unfurlers and would render broken if pointed at unwhitelisted CDNs.
-  ogTitle: nullishText(100),
-  ogDescription: nullishText(300),
+  ogTitle: truncatingNullishText(META_INPUT_MAX),
+  ogDescription: truncatingNullishText(META_INPUT_MAX),
   ogImage: featuredImageSchema,
-  twitterTitle: nullishText(100),
-  twitterDescription: nullishText(200),
+  twitterTitle: truncatingNullishText(META_INPUT_MAX),
+  twitterDescription: truncatingNullishText(META_INPUT_MAX),
   twitterImage: featuredImageSchema,
   featuredImage: featuredImageSchema,
-  featuredImageAlt: nullishText(200),
+  featuredImageAlt: truncatingNullishText(META_INPUT_MAX),
   categoryId: cuidSchema.nullish(),
   tagIds: z.array(cuidSchema).max(10, 'Cannot attach more than 10 tags').optional(),
   publishedAt: datetimeSchema.nullish(),
@@ -387,7 +402,7 @@ export const createBlogPostSchema = z
     ...blogPostBaseShape,
     contentType: ContentTypeSchema.default('MARKDOWN'),
     status: PostStatusSchema.default('DRAFT'),
-    keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
+    keywords: keywordsInput.default([]),
   })
   .strict()
 
@@ -409,7 +424,7 @@ const hexColor = z
 export const createTagSchema = z
   .object({
     name: z.string().min(1, 'Name is required').max(60),
-    description: nullishText(500),
+    description: truncatingNullishText(META_INPUT_MAX),
     metaDescription: truncatingNullishText(META_INPUT_MAX),
     color: hexColor.default('#6B7280'),
   })
@@ -418,12 +433,12 @@ export const createTagSchema = z
 export const createCategorySchema = z
   .object({
     name: z.string().min(1, 'Name is required').max(60),
-    description: nullishText(500),
+    description: truncatingNullishText(META_INPUT_MAX),
     metaTitle: truncatingNullishText(META_INPUT_MAX),
     metaDescription: truncatingNullishText(META_INPUT_MAX),
     color: hexColor.default('#6B7280'),
     icon: nullishText(50),
-    keywords: z.array(z.string().min(1).max(50)).max(10).default([]),
+    keywords: keywordsInput.default([]),
   })
   .strict()
 

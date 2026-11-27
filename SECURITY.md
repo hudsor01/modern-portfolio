@@ -77,7 +77,10 @@ Defensive controls currently in place:
 ### Application
 
 - **CSRF** token validation on mutating routes — `src/lib/csrf-protection.ts`,
-  `src/lib/api-csrf.ts`
+  `src/lib/api-csrf.ts`. Exception: `POST /api/blog/[slug]/view` (anonymous
+  view counter; `sendBeacon` cannot send the header; rate-limited)
+- **Redirects** resolve in `src/proxy.ts` to a static-table or same-origin
+  `Location` only (`//` and `\` paths refused)
 - **Rate limiting** on contact submissions — `src/lib/rate-limiter/`
 - **Input validation** — all external input parsed through Zod schemas
 - **URL protocol allowlist** — URL fields constrained to `http` / `https`

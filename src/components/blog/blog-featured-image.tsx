@@ -2,13 +2,16 @@
 
 import type { ImageProps } from 'next/image'
 import { ImageWithFallback } from '@/components/ui/image-with-fallback'
+import { displayPostTitle } from '@/lib/brand'
 
 interface BlogFeaturedImageProps extends Omit<ImageProps, 'src' | 'onError'> {
   src: string
   /**
    * Post title — used to build the branded `/api/og?title=…` fallback
    * URL when the primary src 404s or is removed upstream (Unsplash
-   * yanks the photo, CDN burp, etc.).
+   * yanks the photo, CDN burp, etc.). A stored brand suffix is stripped
+   * (displayPostTitle) so the card never shows the brand twice and matches
+   * the og:image title.
    */
   postTitle: string
   /** Optional category for richer fallback rendering. */
@@ -47,7 +50,7 @@ export function BlogFeaturedImage({
   src,
   ...rest
 }: BlogFeaturedImageProps) {
-  const params = new URLSearchParams({ title: postTitle })
+  const params = new URLSearchParams({ title: displayPostTitle(postTitle) })
   if (postCategory) params.set('category', postCategory)
   if (fallbackVariant) params.set('variant', fallbackVariant)
   return (

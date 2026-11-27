@@ -1,22 +1,38 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { lowercasePathRedirect } from '@/lib/path-case'
 import { buildEnhancedCSP, shouldEmitUpgradeInsecureRequests } from '@/lib/csp-edge'
+import { resolveSingleHop } from '@/lib/redirect-resolve'
+import { REDIRECT_MAP } from '@/lib/redirects'
 
 export function proxy(request: NextRequest) {
-  // Mixed-case page paths 308 to lowercase. This runs first so a response that
-  // is only a redirect does no nonce/CSP work. 308 keeps the method. next.config
-  // redirects run first and match case-insensitively, so a mixed-case redirected
-  // source is answered there in one hop; the proxy lowercases only what they do
-  // not match. The target is the cloned request URL with only pathname
-  // replaced, so origin and query are preserved. Next strips that origin from
-  // the Location it sends, which is why lowercasePathRedirect refuses `//` and
-  // `\` paths: their lowercase form would be a protocol-relative, off-site URL.
-  const lowered = lowercasePathRedirect(request.nextUrl.pathname)
-  if (lowered !== null) {
-    const url = request.nextUrl.clone()
-    url.pathname = lowered
-    return NextResponse.redirect(url, 308)
+  // One 308 to the final URL for every mixed-case, trailing-slash or
+  // non-canonical /blog?page= request. This runs first so a response that is
+  // only a redirect does no nonce/CSP work; 308 keeps the method.
+  //
+  // next.config `redirects()` (built from the same table) run before the
+  // proxy. On Vercel they match only the exact lowercase source, optionally
+  // with one trailing slash, so `/Home` or `/Github/` reach the proxy; local
+  // `next start` matches them case-insensitively, so the local e2e suite cannot
+  // show Vercel's double hop. src/lib/__tests__/redirect-hops.test.ts simulates
+  // both and is the guard. Next's built-in trailing-slash redirect is off
+  // (`skipTrailingSlashRedirect` in next.config.js), so resolveSingleHop owns
+  // case + slash + table + /blog?page= and answers them in one hop.
+  //
+  // The Location is built from the resolved path on the request origin, never
+  // from a cloned request.nextUrl: NextURL remembers the request's trailing
+  // slash and re-appends it when serialised, which would loop `/about/` onto
+  // itself. Next relativizes a same-origin Location before sending it, which is
+  // why resolveSingleHop refuses `//` and `\` paths: they would leave as a
+  // protocol-relative, off-site URL. External hosts come only from the table.
+  const hop = resolveSingleHop(request.nextUrl.pathname, request.nextUrl.search, REDIRECT_MAP)
+  if (hop?.kind === 'internal') {
+    return NextResponse.redirect(
+      new URL(`${hop.pathname}${hop.search}`, request.nextUrl.origin),
+      308
+    )
+  }
+  if (hop?.kind === 'external') {
+    return NextResponse.redirect(new URL(hop.href), 308)
   }
 
   const nonce = btoa(crypto.randomUUID())

@@ -1,26 +1,10 @@
-import { brandTitle, stripBrandSuffix } from '@/app/shared-metadata'
+import { brandTitle, stripBrandSuffix } from '@/lib/brand'
 
 /**
  * Roughly what Google shows of a title before truncating (it measures pixels,
  * ~600px, which is about 60 characters of mixed-case text).
  */
 export const TITLE_BUDGET = 60
-
-/**
- * The `<title>` segment for a blog post; the root template appends the brand.
- *
- * The pipeline's `metaTitle` is preferred. When it plus " | Richard Hudson"
- * runs past the budget, the post's own title is used instead if its branded
- * form is shorter, so search results show a whole title rather than a cut one.
- * If neither fits, the SEO title stays (Google then trims the brand).
- */
-export function postDocumentTitle(metaTitle: string | null | undefined, title: string): string {
-  const plain = stripBrandSuffix(title)
-  const seo = stripBrandSuffix(metaTitle || '') || plain || 'Blog'
-  if (brandTitle(seo).length <= TITLE_BUDGET) return seo
-  if (plain && brandTitle(plain).length < brandTitle(seo).length) return plain
-  return seo
-}
 
 /** Characters a title can use before the brand suffix pushes it past the budget (43). */
 export const SEO_TITLE_MAX = TITLE_BUDGET - (brandTitle('x').length - 1)
@@ -58,6 +42,44 @@ const TRAILING_FILLER = new Set([
   '–',
 ])
 
+// Created on first use and only where Intl.Segmenter exists, so importing this
+// module can never throw (Firefox lacks Segmenter before 125). Without it the
+// cut falls back to whole code points, which still never splits a surrogate pair.
+let graphemes: Intl.Segmenter | null | undefined
+function graphemeSegmenter(): Intl.Segmenter | null {
+  if (graphemes === undefined) {
+    graphemes =
+      typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function'
+        ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+        : null
+  }
+  return graphemes
+}
+
+/**
+ * Longest prefix of whole user-perceived characters (grapheme clusters) at most
+ * `max` UTF-16 units long, so a hard cut never splits a surrogate pair, an
+ * emoji ZWJ sequence, a flag or a base letter from its combining mark. `max`
+ * stays in UTF-16 units because that is what `.length` (and the budget) counts.
+ * If not even the first cluster fits, falls back to whole code points.
+ */
+function graphemeCut(s: string, max: number): string {
+  let end = 0
+  const segmenter = graphemeSegmenter()
+  if (segmenter !== null) {
+    for (const { segment, index } of segmenter.segment(s)) {
+      if (index + segment.length > max) break
+      end = index + segment.length
+    }
+    if (end > 0) return s.slice(0, end)
+  }
+  for (const codePoint of s) {
+    if (end + codePoint.length > max) break
+    end += codePoint.length
+  }
+  return s.slice(0, end)
+}
+
 function tidy(s: string): string {
   return s.replace(/\s+/g, ' ').trim()
 }
@@ -72,16 +94,18 @@ function cutAtWord(s: string, max: number): string {
   }
   // Only a single word longer than `max` leaves nothing whole to keep; that
   // one word is hard-cut, the only case where a word is ever split.
-  if (kept.length === 0) return s.slice(0, max)
+  if (kept.length === 0) return graphemeCut(s, max)
   while (kept.length > 1 && TRAILING_FILLER.has(kept[kept.length - 1]!.toLowerCase())) kept.pop()
-  return kept.join(' ').replace(/[\s:;,.\-–—(&+]+$/, '') || s.slice(0, max)
+  return kept.join(' ').replace(/[\s:;,.\-–—(&+]+$/, '') || graphemeCut(s, max)
 }
 
 /**
  * The SEO title (`metaTitle`) to store for a post, at most SEO_TITLE_MAX
  * characters, so `<title> | Richard Hudson` fits search results (see the
- * pipeline title spec). Applied by POST/PUT /api/blog, so whatever the
- * publishing pipeline sends is stored compliant and publishing never fails.
+ * pipeline title spec). This is the single title rule: applied on write by
+ * POST/PUT /api/blog (and categories) so whatever the publishing pipeline sends
+ * is stored compliant, AND at read time for the post page <title>, og:title and
+ * twitter:title so legacy stored values render compliant without a data migration.
  *
  * In order: the given SEO title if it fits; else the post title if it fits;
  * else the SEO title without a trailing "(…)"; else its part before ": "; else

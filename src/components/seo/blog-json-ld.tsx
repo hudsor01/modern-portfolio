@@ -10,6 +10,7 @@ import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { CONTACT } from '@/lib/contact-info'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { safeFeaturedImageUrl } from '@/lib/featured-image-url'
+import { displayPostTitle } from '@/lib/brand'
 import {
   PERSON_EMPLOYER,
   PERSON_ID,
@@ -98,10 +99,14 @@ interface BlogPostJsonLdProps {
 }
 
 export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: string | null }) {
+  const title = displayPostTitle(post.title)
   const postSchema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
-    headline: post.title,
+    // Full article title on purpose: headline names the article in structured
+    // data, it is not a search-result title, so the 60-char <title> budget does
+    // not apply. A stored brand suffix is still dropped (displayPostTitle).
+    headline: title,
     description: post.excerpt || post.metaDescription,
     // safeFeaturedImageUrl re-validates at read time so a legacy or
     // imported row with a bad value (`//evil.com/x`, traversal token,
@@ -115,7 +120,7 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
     // for the same post (and JSON-LD renders happen on every blog
     // page render, which would amplify the same signal N×).
     image: safeFeaturedImageUrl(post.featuredImage, {
-      title: post.title,
+      title,
       subtitle: 'Blog Post',
     }).url,
     url: `${SITE_ORIGIN}/blog/${post.slug}`,
@@ -188,7 +193,7 @@ export function BlogPostJsonLd({ post, nonce }: BlogPostJsonLdProps & { nonce?: 
         {
           '@type': 'ListItem',
           position: 3,
-          name: post.title,
+          name: title,
           item: `${SITE_ORIGIN}/blog/${post.slug}`,
         },
       ],
@@ -234,7 +239,7 @@ export function BlogCategoryJsonLd({
       itemListElement: posts.map((post, index) => ({
         '@type': 'ListItem',
         position: index + 1,
-        name: post.title,
+        name: displayPostTitle(post.title),
         url: `${SITE_ORIGIN}/blog/${post.slug}`,
       })),
     },

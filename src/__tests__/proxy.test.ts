@@ -2,35 +2,78 @@
 import { getRelativeURL } from 'next/dist/shared/lib/router/utils/relativize-url'
 import { NextRequest } from 'next/server'
 import { describe, expect, it } from 'vitest'
+import { CONTACT } from '@/lib/contact-info'
+import { RESUME_PDF_PATH } from '@/lib/resume-pdf'
 import { config, proxy } from '@/proxy'
 
 const ORIGIN = 'https://richardwhudsonjr.com'
 const run = (path: string) => proxy(new NextRequest(`${ORIGIN}${path}`))
 
-describe('proxy lowercase redirect', () => {
-  it('308s /About to /about, keeps the query, sends no CSP', () => {
-    const res = run('/About?x=Y')
+const SAME_ORIGIN_REDIRECTS: Array<[string, string]> = [
+  ['/About/', `${ORIGIN}/about`],
+  ['/about/', `${ORIGIN}/about`],
+  ['/About?x=Y', `${ORIGIN}/about?x=Y`],
+  ['/About/?ref=QA', `${ORIGIN}/about?ref=QA`],
+  ['/ABOUT', `${ORIGIN}/about`],
+  ['/Blog/Some-Post', `${ORIGIN}/blog/some-post`],
+  ['/blog/some-post/', `${ORIGIN}/blog/some-post`],
+  ['/Home', `${ORIGIN}/`],
+  ['/HOME/', `${ORIGIN}/`],
+  ['/home/', `${ORIGIN}/`],
+  ['/Blog?page=0', `${ORIGIN}/blog`],
+  ['/blog/?page=0', `${ORIGIN}/blog`],
+  ['/Blog/?page=abc&q=x', `${ORIGIN}/blog?q=x`],
+  [
+    '/blog/Revenue-Operations-Best-Practices-Complete-Guide/',
+    `${ORIGIN}/blog/complete-guide-revenue-operations-strategy`,
+  ],
+  ['/api/health/', `${ORIGIN}/api/health`],
+  ['/llms.txt/', `${ORIGIN}/llms.txt`],
+]
+
+const EXTERNAL_REDIRECTS: Array<[string, string]> = [
+  ['/Github/', CONTACT.github.url],
+  ['/github/', CONTACT.github.url],
+  ['/Github?x=1', `${CONTACT.github.url}?x=1`],
+  ['/Linkedin/', CONTACT.linkedin.url],
+  ['/Twitter', CONTACT.twitter.url],
+]
+
+describe('proxy single-hop redirect', () => {
+  it.each(SAME_ORIGIN_REDIRECTS)('308s %s to %s with no CSP', (path, location) => {
+    const res = run(path)
     expect(res.status).toBe(308)
-    expect(res.headers.get('location')).toBe(`${ORIGIN}/about?x=Y`)
+    expect(res.headers.get('location')).toBe(location)
     expect(res.headers.get('content-security-policy')).toBeNull()
   })
 
-  it('308s /Blog/Some-Post to its lowercase form', () => {
-    const res = run('/Blog/Some-Post')
+  it.each(EXTERNAL_REDIRECTS)('308s %s to the profile %s with no CSP', (path, location) => {
+    const res = run(path)
     expect(res.status).toBe(308)
-    expect(res.headers.get('location')).toBe(`${ORIGIN}/blog/some-post`)
+    expect(res.headers.get('location')).toBe(location)
+    expect(res.headers.get('content-security-policy')).toBeNull()
   })
 
-  it.each(['//Evil.com/Path?q=A', '/\\Evil.com/Path'])(
+  // Following each Location once must not redirect again: a cloned nextUrl
+  // re-appends the request's trailing slash, which would loop with
+  // skipTrailingSlashRedirect on.
+  it.each(SAME_ORIGIN_REDIRECTS)('does not loop: %s', (path) => {
+    const location = run(path).headers.get('location') as string
+    const followed = proxy(new NextRequest(location))
+    expect(followed.headers.get('location')).toBeNull()
+    expect(followed.headers.get('content-security-policy')).toBeTruthy()
+  })
+
+  it.each(['//Evil.com/Path?q=A', '/\\Evil.com/Path', '//evil.com/'])(
     'does not redirect a protocol-relative path: %s',
     (path) => {
       expect(run(path).headers.get('location')).toBeNull()
     }
   )
 
-  // Next's router relativizes same-origin middleware redirects before sending
+  // Next's router relativizes same-origin proxy redirects before sending
   // them (resolve-routes.js), so check the Location the browser actually gets.
-  it.each(['/About?x=Y', '/Blog/Some-Post', '/About/'])(
+  it.each(SAME_ORIGIN_REDIRECTS)(
     'stays on-site after Next relativizes the Location: %s',
     (path) => {
       const location = run(path).headers.get('location')
@@ -47,7 +90,15 @@ describe('proxy lowercase redirect', () => {
     expect(res.headers.get('content-security-policy')).toBeTruthy()
   })
 
-  it.each(['/API/Blog', '/Richard_Hudson_Revenue_Operations.pdf'])('passes %s through', (path) => {
+  it.each([
+    '/about',
+    '/blog?page=2',
+    '/API/Blog',
+    '/api/Health-Check',
+    '/_next/Foo',
+    '/LLMS.txt',
+    RESUME_PDF_PATH,
+  ])('passes %s through', (path) => {
     expect(run(path).headers.get('location')).toBeNull()
   })
 

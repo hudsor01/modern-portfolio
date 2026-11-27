@@ -15,9 +15,26 @@ import {
   metaDescriptionNeedsDerivation,
   normalizeStoredSeoText,
   opensWithAuthorBio,
+  fitStoredText,
+  STORED_TEXT_LIMITS,
 } from '@/lib/blog-excerpt'
 
 const logger = createContextLogger('SlugAPI')
+
+/**
+ * PUT semantics for normalized text: a string the client sent that normalizes
+ * to nothing (an over-long value with no text, or a bio opener with no body to
+ * derive from) is treated as omitted, so it never clears a stored value. Only
+ * an explicit `null` clears. POST has nothing stored, so it keeps the `null`.
+ */
+function unlessEmptied<T>(sent: unknown, normalized: T | null | undefined): T | null | undefined {
+  return typeof sent === 'string' && normalized === null ? undefined : normalized
+}
+
+/** fitStoredText under the PUT rule above. */
+function fitForUpdate(sent: string | null | undefined, max: number): string | null | undefined {
+  return unlessEmptied(sent, fitStoredText(sent, max))
+}
 
 const POST_WITH_RELATIONS = {
   columns: BLOG_POST_COLUMNS,
@@ -139,22 +156,49 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     // stored body and excerpt are read only when needed: a bio field without new
     // content, or a derived meta without a new excerpt (the meta prefers the
     // post's excerpt).
-    const bioExcerpt = opensWithAuthorBio(body.excerpt)
     const deriveMeta = metaDescriptionNeedsDerivation(body.metaDescription)
-    const stored =
-      (body.content === undefined && (bioExcerpt || deriveMeta)) ||
+    const loadStored = () =>
+      db.query.blogPosts.findFirst({
+        where: eq(blogPosts.id, existingPost.id),
+        columns: { content: true, excerpt: true },
+      })
+    const normalize = (
+      excerptInput: typeof body.excerpt,
+      current: { content: string; excerpt: string | null } | undefined
+    ) =>
+      normalizeStoredSeoText({
+        excerpt: excerptInput,
+        metaDescription: body.metaDescription,
+        content: body.content ?? current?.content,
+        currentExcerpt: current?.excerpt,
+      })
+    let stored =
+      (body.content === undefined && (opensWithAuthorBio(body.excerpt) || deriveMeta)) ||
       (deriveMeta && body.excerpt === undefined)
-        ? await db.query.blogPosts.findFirst({
-            where: eq(blogPosts.id, existingPost.id),
-            columns: { content: true, excerpt: true },
-          })
+        ? await loadStored()
         : undefined
-    const seoText = normalizeStoredSeoText({
-      excerpt: body.excerpt,
-      metaDescription: body.metaDescription,
-      content: body.content ?? stored?.content,
-      currentExcerpt: stored?.excerpt,
-    })
+    let seoText = normalize(body.excerpt, stored)
+    // A sent excerpt that normalizes to nothing is treated as omitted (the
+    // stored excerpt is kept, see unlessEmptied), so a derived meta must come
+    // from that kept excerpt, exactly as when the excerpt was not sent.
+    if (typeof body.excerpt === 'string' && seoText.excerpt === null) {
+      if (deriveMeta && stored === undefined) stored = await loadStored()
+      seoText = normalize(undefined, stored)
+    }
+
+    const excerpt = unlessEmptied(body.excerpt, seoText.excerpt)
+    const metaDescription = unlessEmptied(body.metaDescription, seoText.metaDescription)
+    const ogTitle = fitForUpdate(body.ogTitle, STORED_TEXT_LIMITS.ogTitle)
+    const ogDescription = fitForUpdate(body.ogDescription, STORED_TEXT_LIMITS.ogDescription)
+    const twitterTitle = fitForUpdate(body.twitterTitle, STORED_TEXT_LIMITS.twitterTitle)
+    const twitterDescription = fitForUpdate(
+      body.twitterDescription,
+      STORED_TEXT_LIMITS.twitterDescription
+    )
+    const featuredImageAlt = fitForUpdate(
+      body.featuredImageAlt,
+      STORED_TEXT_LIMITS.featuredImageAlt
+    )
 
     const wordCount = body.content ? body.content.split(/\s+/).length : undefined
     const readingTime = wordCount ? Math.ceil(wordCount / 200) : undefined
@@ -166,7 +210,7 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
     // `|| null` coalesce required.
     const updateData: Partial<NewBlogPost> = {
       ...(body.title && { title: body.title }),
-      ...(seoText.excerpt !== undefined && { excerpt: seoText.excerpt }),
+      ...(excerpt !== undefined && { excerpt }),
       ...(body.content && { content: body.content, wordCount, readingTime }),
       ...(body.contentType && { contentType: body.contentType }),
       ...(body.status && { status: body.status }),
@@ -175,24 +219,24 @@ export async function PUT(request: NextRequest, context: { params: Promise<{ slu
       ...(body.metaTitle !== undefined && {
         metaTitle: normalizeSeoTitle(body.metaTitle, body.title || existingPost.title),
       }),
-      ...(seoText.metaDescription !== undefined && {
-        metaDescription: seoText.metaDescription,
-      }),
+      ...(metaDescription !== undefined && { metaDescription }),
       ...(body.keywords && { keywords: body.keywords }),
       ...(body.canonicalUrl !== undefined && { canonicalUrl: body.canonicalUrl }),
-      // Social-card fields — schema accepts these on PUT (nullish in
-      // blogPostBaseShape), so the handler must spread them through or
-      // silently drop a valid client payload.
-      ...(body.ogTitle !== undefined && { ogTitle: body.ogTitle }),
-      ...(body.ogDescription !== undefined && { ogDescription: body.ogDescription }),
+      // ogTitle, ogDescription, twitterTitle and twitterDescription (and the
+      // images) are stored for API round-tripping and normalized on write, but
+      // intentionally not rendered: post pages derive every share surface from
+      // the one canonical normalized title, meta description and image
+      // (src/app/blog/[slug]/page.tsx), because separate per-surface values
+      // were how three SEO surfaces disagreed before. Omitted (or sent but
+      // normalized to nothing, see unlessEmptied) stays unwritten; null clears.
+      ...(ogTitle !== undefined && { ogTitle }),
+      ...(ogDescription !== undefined && { ogDescription }),
       ...(body.ogImage !== undefined && { ogImage: body.ogImage }),
-      ...(body.twitterTitle !== undefined && { twitterTitle: body.twitterTitle }),
-      ...(body.twitterDescription !== undefined && {
-        twitterDescription: body.twitterDescription,
-      }),
+      ...(twitterTitle !== undefined && { twitterTitle }),
+      ...(twitterDescription !== undefined && { twitterDescription }),
       ...(body.twitterImage !== undefined && { twitterImage: body.twitterImage }),
       ...(body.featuredImage !== undefined && { featuredImage: body.featuredImage }),
-      ...(body.featuredImageAlt !== undefined && { featuredImageAlt: body.featuredImageAlt }),
+      ...(featuredImageAlt !== undefined && { featuredImageAlt }),
       ...(body.categoryId !== undefined && { categoryId: body.categoryId ?? null }),
       ...(body.publishedAt !== undefined && {
         publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,

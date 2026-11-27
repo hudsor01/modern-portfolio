@@ -15,20 +15,6 @@
       "schedule": "17 4 * * *"
     }
   ],
-  "redirects": [
-    {
-      "source": "/github",
-      "destination": "https://github.com/hudsor01"
-    },
-    {
-      "source": "/linkedin",
-      "destination": "https://linkedin.com/in/hudsor01"
-    },
-    {
-      "source": "/twitter",
-      "destination": "https://twitter.com/hudsor01"
-    }
-  ],
   "rewrites": [],
   "git": {
     "deploymentEnabled": {

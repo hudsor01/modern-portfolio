@@ -190,4 +190,16 @@ describe('POST /api/blog/tags', () => {
     expect(stored.length).toBeLessThanOrEqual(160)
     expect(stored.match(/…/g)?.length ?? 0).toBeLessThanOrEqual(1)
   })
+
+  it('accepts a 2000-character description and stores at most 500 characters', async () => {
+    const res = await POST(
+      reqPost({
+        name: 'rev-ops',
+        description: 'Revenue operations keeps the pipeline honest. '.repeat(45),
+      })
+    )
+    expect(res.status).toBe(201)
+    const stored = dbMocks.insertValues.mock.calls[0]?.[0]?.description as string
+    expect(stored.length).toBeLessThanOrEqual(500)
+  })
 })

@@ -1,5 +1,6 @@
 'use client'
 
+import { RESUME_PDF_DOWNLOAD_NAME, RESUME_PDF_PATH } from '@/lib/resume-pdf'
 import React, { useState } from 'react'
 import { Navbar } from '@/components/layout/navbar'
 import { Download, FileText, ExternalLink } from 'lucide-react'
@@ -15,8 +16,8 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
 
   const handleDownload = () => {
     const link = document.createElement('a')
-    link.href = '/Richard_Hudson_Revenue_Operations.pdf'
-    link.download = 'Richard_Hudson_Resume.pdf'
+    link.href = RESUME_PDF_PATH
+    link.download = RESUME_PDF_DOWNLOAD_NAME
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -52,7 +53,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
               <Button
                 data-track="Resume Download"
                 data-track-location="resume-view"
-                data-track-target="/Richard_Hudson_Revenue_Operations.pdf"
+                data-track-target={RESUME_PDF_PATH}
                 onClick={handleDownload}
                 size="lg"
                 className="h-14 px-8 text-base font-medium"
@@ -82,7 +83,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                 <a
                   data-track="Resume Open"
                   data-track-location="resume-view"
-                  href="/Richard_Hudson_Revenue_Operations.pdf"
+                  href={RESUME_PDF_PATH}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center"
@@ -114,7 +115,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                     <Button
                       data-track="Resume Download"
                       data-track-location="resume-view-fallback"
-                      data-track-target="/Richard_Hudson_Revenue_Operations.pdf"
+                      data-track-target={RESUME_PDF_PATH}
                       onClick={handleDownload}
                     >
                       <Download className="mr-2 h-4 w-4" />
@@ -126,7 +127,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
 
               {!error && (
                 <object
-                  data="/Richard_Hudson_Revenue_Operations.pdf"
+                  data={RESUME_PDF_PATH}
                   type="application/pdf"
                   className="w-full h-[800px] border-0 bg-white"
                   aria-label="Richard Hudson Resume"
@@ -139,7 +140,7 @@ const ResumeViewClient = React.memo(function ResumeViewClient() {
                     <a
                       data-track="Resume Open"
                       data-track-location="resume-view-fallback"
-                      href="/Richard_Hudson_Revenue_Operations.pdf"
+                      href={RESUME_PDF_PATH}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-link"

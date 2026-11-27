@@ -16,7 +16,7 @@ import { createContextLogger } from '@/lib/logger'
 import type { BlogCategoryData } from '@/types/api'
 import type { BlogListPost } from '@/types/blog'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
-import { brandTitle } from '@/app/shared-metadata'
+import { brandTitle } from '@/lib/brand'
 import {
   ALL_CATEGORIES,
   BLOG_PAGE_SIZE,
@@ -31,6 +31,7 @@ import { resolveExcerpt } from '@/lib/blog-excerpt'
 import { CONTACT } from '@/lib/contact-info'
 import { getCategoryChipLabel, resolveListCovers } from '@/lib/blog-list'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
+import { displayPostTitle } from '@/lib/brand'
 import { DecorativeBlob } from '@/components/ui/decorative-blob'
 
 const logger = createContextLogger('BlogIndex')
@@ -435,7 +436,7 @@ export default async function BlogHomePage({
           nonce={nonce}
           name="Blog posts by Richard Hudson"
           items={listing.posts.map((post) => ({
-            name: post.title,
+            name: displayPostTitle(post.title),
             url: canonicalUrl(`/blog/${post.slug}`),
           }))}
         />

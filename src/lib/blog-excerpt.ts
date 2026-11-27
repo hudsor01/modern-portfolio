@@ -10,6 +10,8 @@ const EXCERPT_MAX = 160
 export const LEDE_MAX = 320
 export const META_MAX = 160
 const MIN_PARAGRAPH_LENGTH = 40
+/** Body prefix, in code points, that every lede and feed description is derived from. */
+export const CONTENT_HEAD_CHARS = 4000
 
 export { isBioBoilerplate }
 
@@ -322,6 +324,37 @@ export function resolveExcerpt(
 }
 
 /**
+ * The first CONTENT_HEAD_CHARS code points of a body, like Postgres
+ * `left(content, 4000)` (which counts characters, not UTF-16 units). Never
+ * splits a surrogate pair.
+ */
+export function contentHeadOf(content: string | null | undefined): string {
+  if (!content) return ''
+  if (content.length <= CONTENT_HEAD_CHARS) return content
+  return Array.from(content).slice(0, CONTENT_HEAD_CHARS).join('')
+}
+
+/**
+ * The post lede: stored excerpt, else the body's first real paragraph, else a
+ * non-bio meta description, at LEDE_MAX. The post page holds the full row and
+ * the RSS feed reads only `left(content, 4000)`; both resolve from the same
+ * bounded prefix, so page lede and feed description are identical by
+ * construction. The bound exists because whole-body feed reads caused the
+ * 2026-11-24 Neon egress outage.
+ */
+export function resolvePostLede(input: {
+  excerpt: string | null | undefined
+  content: string | null | undefined
+  metaDescription: string | null | undefined
+}): string {
+  const opts = { maxLength: LEDE_MAX }
+  return (
+    resolveExcerpt({ excerpt: input.excerpt, content: contentHeadOf(input.content) }, opts) ||
+    resolveExcerpt({ excerpt: input.metaDescription, content: null }, opts)
+  )
+}
+
+/**
  * Meta description: the stored one when it is real (not bio, not blank),
  * as plain text within META_MAX; otherwise derived like an excerpt.
  */
@@ -363,6 +396,62 @@ export function fitMetaDescription(raw: string | null | undefined): string | nul
 }
 
 /**
+ * SEO and descriptive text the admin API stores is normalized, never rejected,
+ * so publishing cannot fail on it (same rule as `normalizeSeoTitle` and
+ * `fitMetaDescription`). The limits match the DB columns (`ogDescription`
+ * varchar(300), `twitterDescription` varchar(200)) or the long-standing API caps.
+ */
+export const STORED_TEXT_LIMITS = {
+  excerpt: 500,
+  ogTitle: 100,
+  ogDescription: 300,
+  twitterTitle: 100,
+  twitterDescription: 200,
+  featuredImageAlt: 200,
+  taxonomyDescription: 500,
+} as const
+
+const KEYWORD_MAX = 50
+const KEYWORDS_MAX = 10
+
+/**
+ * Stored text as sent when it fits `max` (`undefined` = omitted, `null` =
+ * cleared); otherwise plain text cut on a sentence, else a word, boundary with
+ * one `…` (`null` when it has no text).
+ */
+export function fitStoredText<T extends string | null | undefined>(
+  raw: T,
+  max: number
+): T | string | null {
+  if (typeof raw !== 'string' || raw.length <= max) return raw
+  return truncateAtBoundary(stripMarkdownToPlain(raw), max) || null
+}
+
+/**
+ * Keywords as stored: each trimmed, empties dropped, an item over 50 chars cut
+ * to its longest whole-word prefix (a single over-long word is hard cut), the
+ * first 10 kept in order. Keywords are tags, not prose, so no ellipsis. Items
+ * after the 10th kept one are never read, so the cost is bounded by where the
+ * first 10 non-empty items end, not by the list length.
+ */
+export function fitKeywords(items: readonly string[]): string[] {
+  const out: string[] = []
+  for (const raw of items) {
+    let item = raw.trim()
+    if (item.length > KEYWORD_MAX) {
+      const window = item.slice(0, KEYWORD_MAX + 1)
+      const boundary = WHITESPACE.test(window[KEYWORD_MAX] as string)
+        ? KEYWORD_MAX
+        : window.lastIndexOf(' ', KEYWORD_MAX - 1)
+      item = item.slice(0, boundary > 0 ? boundary : codePointCut(item, KEYWORD_MAX)).trim()
+    }
+    if (item !== '') out.push(item)
+    if (out.length === KEYWORDS_MAX) break
+  }
+  return out
+}
+
+/**
  * True when the stored meta must come from the excerpt/body: a bio opener, or
  * an over-long meta with no text of its own. PUT uses it to know when to read
  * the stored post.
@@ -397,7 +486,7 @@ export function normalizeStoredSeoText<
 }): { excerpt: E | string | null; metaDescription: M | string | null } {
   const excerpt = opensWithAuthorBio(input.excerpt)
     ? resolveExcerpt({ excerpt: null, content: input.content }, { maxLength: LEDE_MAX }) || null
-    : input.excerpt
+    : fitStoredText(input.excerpt, STORED_TEXT_LIMITS.excerpt)
   const fallbackExcerpt = excerpt === undefined ? input.currentExcerpt : excerpt
   const metaDescription = opensWithAuthorBio(input.metaDescription)
     ? resolveMetaDescription({

@@ -108,11 +108,35 @@ describe('BlogPostJsonLd', () => {
     const parsed = JSON.parse(container.querySelector('script')!.innerHTML)
     expect(parsed.image).toBe('https://images.unsplash.com/photo-1542744173-05336fcc7ad4?w=1200')
   })
+
+  it('drops a stored brand suffix from the headline, breadcrumb and OG card title', () => {
+    const branded = {
+      ...samplePost,
+      title: 'Pipeline Velocity Explained | Richard Hudson',
+      featuredImage: null,
+    } as unknown as BlogPostData
+    const { container } = render(<BlogPostJsonLd post={branded} />)
+    const parsed = JSON.parse(container.querySelector('script')!.innerHTML)
+    expect(parsed.headline).toBe('Pipeline Velocity Explained')
+    expect(parsed.breadcrumb.itemListElement[2].name).toBe('Pipeline Velocity Explained')
+    expect(new URL(parsed.image).searchParams.get('title')).toBe('Pipeline Velocity Explained')
+  })
 })
 
 describe('BlogCategoryJsonLd', () => {
   beforeEach(() => {
     cleanup()
+  })
+
+  it('drops a stored brand suffix from list item names', () => {
+    const { container } = render(
+      <BlogCategoryJsonLd
+        category={{ name: 'RevOps', slug: 'revops' }}
+        posts={[{ title: 'First — Richard Hudson', slug: 'first' }]}
+      />
+    )
+    const parsed = JSON.parse(container.querySelector('script')!.innerHTML)
+    expect(parsed.mainEntity.itemListElement[0].name).toBe('First')
   })
 
   it('renders a CollectionPage schema with category-derived fields', () => {

@@ -184,4 +184,23 @@ describe('POST /api/blog/categories', () => {
     expect(stored.length).toBeLessThanOrEqual(160)
     expect(stored.match(/…/g)?.length ?? 0).toBeLessThanOrEqual(1)
   })
+
+  it('accepts a 2000-character description and 15 keywords incl. a 70-char one', async () => {
+    const res = await POST(
+      reqPost({
+        name: 'rev-ops',
+        description: 'Revenue operations keeps the pipeline honest. '.repeat(45),
+        keywords: [...Array.from({ length: 14 }, (_, i) => `kw${i}`), 'k'.repeat(70)],
+      })
+    )
+    expect(res.status).toBe(201)
+    const v = dbMocks.insertValues.mock.calls[0]?.[0]
+    expect((v.description as string).length).toBeLessThanOrEqual(500)
+    expect(v.keywords).toHaveLength(10)
+  })
+
+  it('still returns 400 for an icon over 50 characters', async () => {
+    const res = await POST(reqPost({ name: 'rev-ops', icon: 'i'.repeat(51) }))
+    expect(res.status).toBe(400)
+  })
 })

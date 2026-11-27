@@ -331,6 +331,43 @@ describe('POST /api/blog', () => {
     expect(long.startsWith(stored)).toBe(true)
   })
 
+  it('accepts over-long SEO text and stores each field within its bound', async () => {
+    const long = 'Revenue operations keeps the pipeline honest. '.repeat(30)
+    const res = await POST(
+      reqPost({
+        ...validBody,
+        excerpt: long,
+        ogTitle: long,
+        ogDescription: long,
+        twitterTitle: long,
+        twitterDescription: long,
+        featuredImageAlt: long,
+        keywords: [...Array.from({ length: 14 }, (_, i) => `kw${i}`), 'k'.repeat(70)],
+      })
+    )
+    expect(res.status).toBe(201)
+    const v = dbMocks.insertValues.mock.calls[0]?.[0]
+    const bounds = {
+      excerpt: 500,
+      ogTitle: 100,
+      ogDescription: 300,
+      twitterTitle: 100,
+      twitterDescription: 200,
+      featuredImageAlt: 200,
+    } as const
+    for (const [field, max] of Object.entries(bounds)) {
+      const stored = v[field] as string
+      expect(stored.length).toBeLessThanOrEqual(max)
+      expect(stored.endsWith('.') || stored.endsWith('…')).toBe(true)
+    }
+    expect(v.keywords).toHaveLength(10)
+  })
+
+  it('still returns 400 for a title over 200 characters', async () => {
+    const res = await POST(reqPost({ ...validBody, title: 'a'.repeat(201) }))
+    expect(res.status).toBe(400)
+  })
+
   it('returns 401 when admin token missing', async () => {
     vi.mocked(isAdminRequest).mockReturnValueOnce(false)
     const res = await POST(reqPost(validBody))

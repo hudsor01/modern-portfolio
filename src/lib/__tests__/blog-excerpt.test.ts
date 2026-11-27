@@ -1,6 +1,19 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { isBioBoilerplate, resolveExcerpt, stripMarkdownToPlain } from '../blog-excerpt'
+import {
+  CONTENT_HEAD_CHARS,
+  contentHeadOf,
+  fitKeywords,
+  fitStoredText,
+  isBioBoilerplate,
+  LEDE_MAX,
+  resolveExcerpt,
+  normalizeStoredSeoText,
+  resolvePostLede,
+  STORED_TEXT_LIMITS,
+  stripMarkdownToPlain,
+} from '../blog-excerpt'
+import { blogPosts } from '@/db/schema'
 
 const BIO =
   'I spent six years in the Texas Army National Guard before moving into revenue operations and never looked back.'
@@ -126,5 +139,166 @@ describe('resolveExcerpt keeps real excerpts as plain text', () => {
   it('falls back to the body when a stored excerpt strips to nothing', () => {
     const content = 'A real opening paragraph that is long enough to qualify as an excerpt.'
     expect(resolveExcerpt({ excerpt: '![cover](https://x.test/a.png)', content })).toBe(content)
+  })
+})
+
+describe('contentHeadOf', () => {
+  it('returns short content unchanged and empty for null/undefined', () => {
+    expect(contentHeadOf('short')).toBe('short')
+    expect(contentHeadOf(null)).toBe('')
+    expect(contentHeadOf(undefined)).toBe('')
+  })
+
+  it('cuts at CONTENT_HEAD_CHARS code points without splitting a surrogate pair', () => {
+    expect(CONTENT_HEAD_CHARS).toBe(4000)
+    const emoji = '😀'.repeat(4010)
+    const head = contentHeadOf(emoji)
+    expect(Array.from(head)).toHaveLength(4000)
+    expect(head).toBe('😀'.repeat(4000))
+    expect(contentHeadOf('a'.repeat(4000))).toBe('a'.repeat(4000))
+    expect(contentHeadOf('a'.repeat(4001))).toBe('a'.repeat(4000))
+  })
+})
+
+describe('resolvePostLede', () => {
+  const PARA =
+    'Forecast accuracy depends on clean pipeline stages and honest close dates across every region.'
+
+  it('uses the excerpt, else the body prefix, else the meta description, at LEDE_MAX', () => {
+    expect(
+      resolvePostLede({
+        excerpt: 'A perfectly good summary of the post.',
+        content: '',
+        metaDescription: null,
+      })
+    ).toBe('A perfectly good summary of the post.')
+    expect(
+      resolvePostLede({ excerpt: null, content: `# H\n\n${PARA}`, metaDescription: null })
+    ).toBe(PARA)
+    expect(
+      resolvePostLede({
+        excerpt: null,
+        content: '',
+        metaDescription: `${'x'.repeat(10)} meta description text here.`,
+      })
+    ).toBe('xxxxxxxxxx meta description text here.')
+    const long = `${'word '.repeat(100)}end.`
+    expect(
+      resolvePostLede({ excerpt: long, content: null, metaDescription: null }).length
+    ).toBeLessThanOrEqual(LEDE_MAX)
+  })
+
+  it('matches resolveExcerpt over the prefix at LEDE_MAX', () => {
+    const content = `# H\n\n${PARA}`
+    expect(resolvePostLede({ excerpt: null, content, metaDescription: null })).toBe(
+      resolveExcerpt({ excerpt: null, content: contentHeadOf(content) }, { maxLength: LEDE_MAX })
+    )
+  })
+
+  it('is identical for a full body and its 4000-code-point prefix (page vs feed)', () => {
+    const late = `${'filler words\n\n'.repeat(400)}${PARA}\n\nMore.`
+    const emoji = `${'😀 '.repeat(50)}\n\n${'x'.repeat(3850)}\n\n${PARA}`
+    for (const body of [late, emoji]) {
+      const prefix = Array.from(body).slice(0, 4000).join('')
+      const page = resolvePostLede({
+        excerpt: null,
+        content: body,
+        metaDescription: 'Meta description fallback text here.',
+      })
+      const feed = resolvePostLede({
+        excerpt: null,
+        content: prefix,
+        metaDescription: 'Meta description fallback text here.',
+      })
+      expect(page).toBe(feed)
+    }
+  })
+})
+
+describe('STORED_TEXT_LIMITS', () => {
+  it('never exceeds the varchar column bounds', () => {
+    expect(STORED_TEXT_LIMITS.ogDescription).toBeLessThanOrEqual(
+      (blogPosts.ogDescription as unknown as { length: number }).length
+    )
+    expect(STORED_TEXT_LIMITS.twitterDescription).toBeLessThanOrEqual(
+      (blogPosts.twitterDescription as unknown as { length: number }).length
+    )
+  })
+})
+
+describe('fitStoredText', () => {
+  const long = 'Revenue operations keeps the pipeline honest. '.repeat(40)
+
+  it('returns undefined and null as sent', () => {
+    expect(fitStoredText(undefined, 100)).toBeUndefined()
+    expect(fitStoredText(null, 100)).toBeNull()
+  })
+
+  it('returns a value within the limit exactly as sent', () => {
+    expect(fitStoredText('**Keep** me', 100)).toBe('**Keep** me')
+  })
+
+  it('cuts a longer value within the limit on a sentence or one ellipsis', () => {
+    for (const max of [100, 200, 300]) {
+      const out = fitStoredText(long, max) as string
+      expect(out.length).toBeLessThanOrEqual(max)
+      expect(out.endsWith('.') || out.endsWith('…')).toBe(true)
+    }
+    const words = fitStoredText('word '.repeat(100), 100) as string
+    expect(words.endsWith('…')).toBe(true)
+    expect(words.match(/…/g)).toHaveLength(1)
+  })
+
+  it('returns null for a longer value with no text', () => {
+    expect(fitStoredText('-'.repeat(600), 100)).toBeNull()
+  })
+})
+
+describe('fitKeywords', () => {
+  it('trims, drops empties, cuts long items on a word and caps at 10', () => {
+    const phrase = 'revenue operations strategy '.repeat(5)
+    const out = fitKeywords([
+      ' a ',
+      '',
+      '   ',
+      'x'.repeat(60),
+      phrase,
+      ...Array.from({ length: 15 }, (_, i) => `kw${i}`),
+    ])
+    expect(out).toHaveLength(10)
+    expect(out[0]).toBe('a')
+    expect(out[1]).toBe('x'.repeat(50))
+    expect(out[2]).toBe('revenue operations strategy revenue operations')
+    expect(out.every((k) => k.length >= 1 && k.length <= 50)).toBe(true)
+  })
+
+  it('stops reading items once 10 are kept', () => {
+    const items = [
+      '',
+      ...Array.from({ length: 12 }, (_, i) => `kw${i}`),
+      ...Array(10_000).fill('x'),
+    ]
+    const read = new Set<number>()
+    const counted = new Proxy(items, {
+      get(target, key, receiver) {
+        if (typeof key === 'string' && /^\d+$/.test(key)) read.add(Number(key))
+        return Reflect.get(target, key, receiver)
+      },
+    })
+    expect(fitKeywords(counted)).toEqual(Array.from({ length: 10 }, (_, i) => `kw${i}`))
+    expect(Math.max(...read)).toBe(10)
+  })
+})
+
+describe('normalizeStoredSeoText excerpt fit', () => {
+  it('fits a non-bio excerpt over 500 and derives meta from it', () => {
+    const excerpt = 'Pipeline hygiene matters for forecast accuracy. '.repeat(40)
+    const out = normalizeStoredSeoText({
+      excerpt,
+      metaDescription: undefined,
+      content: 'body',
+    })
+    expect((out.excerpt as string).length).toBeLessThanOrEqual(STORED_TEXT_LIMITS.excerpt)
+    expect(out.excerpt).toBe(fitStoredText(excerpt, STORED_TEXT_LIMITS.excerpt))
   })
 })

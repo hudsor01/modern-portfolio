@@ -1,8 +1,14 @@
 // @vitest-environment node
+import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { computeResumeSourceHash, hashResumeSource, resumeSource } from '../resume-source-hash'
+import {
+  computeResumeSourceHash,
+  hashResumePrintText,
+  hashResumeSource,
+  resumeSource,
+} from '../resume-source-hash'
 
 const base = computeResumeSourceHash()
 
@@ -96,6 +102,21 @@ describe('canonical JSON', () => {
   it('respects array order', () => {
     expect(mutated((s) => s.experience.reverse())).not.toBe(base)
     expect(mutated((s) => s.certifications.reverse())).not.toBe(base)
+  })
+})
+
+describe('hashResumePrintText', () => {
+  it('is the sha256 hex of the UTF-8 text', () => {
+    const text = 'About 10+ Years Experience | Dallas, TX Résumé – “quoted”'
+    expect(hashResumePrintText(text)).toBe(
+      createHash('sha256').update(Buffer.from(text, 'utf8')).digest('hex')
+    )
+    expect(hashResumePrintText(text)).toMatch(/^[0-9a-f]{64}$/)
+  })
+
+  it('changes with any character of the text', () => {
+    expect(hashResumePrintText('About | Dallas')).not.toBe(hashResumePrintText('About · Dallas'))
+    expect(hashResumePrintText('About')).not.toBe(hashResumePrintText('about'))
   })
 })
 

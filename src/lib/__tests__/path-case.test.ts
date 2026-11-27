@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import { lowercasePathRedirect } from '@/lib/path-case'
+import { RESUME_PDF_PATH } from '@/lib/resume-pdf'
 
 describe('lowercasePathRedirect', () => {
   it.each([
@@ -23,14 +24,12 @@ describe('lowercasePathRedirect', () => {
     }
   )
 
-  it.each([
-    '/Richard_Hudson_Revenue_Operations.pdf',
-    '/Images/Hero.PNG',
-    '/LLMS.txt',
-    '/Favicon.ico',
-  ])('never redirects file-like paths: %s', (input) => {
-    expect(lowercasePathRedirect(input)).toBeNull()
-  })
+  it.each([RESUME_PDF_PATH, '/Images/Hero.PNG', '/LLMS.txt', '/Favicon.ico'])(
+    'never redirects file-like paths: %s',
+    (input) => {
+      expect(lowercasePathRedirect(input)).toBeNull()
+    }
+  )
 
   it.each(['/Caf%C3%A9', '/About%2FTeam'])('never redirects percent-encoded: %s', (input) => {
     expect(lowercasePathRedirect(input)).toBeNull()
@@ -42,6 +41,19 @@ describe('lowercasePathRedirect', () => {
       expect(lowercasePathRedirect(input)).toBeNull()
     }
   )
+
+  // Slash canonicalization belongs to resolveSingleHop (src/lib/redirect-resolve.ts),
+  // which strips trailing slashes before calling this.
+  it.each([
+    ['/About/', '/about/'],
+    ['/About//', '/about//'],
+  ])('does not strip trailing slashes: %s', (input, expected) => {
+    expect(lowercasePathRedirect(input)).toBe(expected)
+  })
+
+  it('returns null for a lowercase path with a trailing slash', () => {
+    expect(lowercasePathRedirect('/about/')).toBeNull()
+  })
 
   it.each(['/About', '/Blog/Some-Post', '/About/', '/Tools/Pipeline-Coverage'])(
     'is idempotent (no loop): %s',

@@ -9,7 +9,8 @@ import { SITE_ORIGIN } from '@/lib/absolute-url'
 import { CONTACT } from '@/lib/contact-info'
 import { getDisplayYearMonth } from '@/lib/data-formatters'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
-import { resolveExcerpt } from '@/lib/blog-excerpt'
+import { resolvePostLede } from '@/lib/blog-excerpt'
+import { displayPostTitle } from '@/lib/brand'
 
 const logger = createContextLogger('RssAPI')
 
@@ -107,13 +108,16 @@ export async function GET(request: NextRequest) {
       lastBuildDate: lastBuild.toISOString(),
       language: 'en-us',
       posts: posts.map((post) => ({
-        title: post.title,
+        // Full title, minus a stored " | Richard Hudson" the reader already shows.
+        title: displayPostTitle(post.title),
         link: `${SITE_URL}/blog/${post.slug}`,
-        // Stored excerpt, else the body's first real paragraph, else a non-bio
-        // meta description: no bio boilerplate reaches a feed reader.
-        description:
-          resolveExcerpt({ excerpt: post.excerpt, content: post.contentHead }) ||
-          resolveExcerpt({ excerpt: post.metaDescription, content: null }),
+        // Equal to the post-page lede: same resolver, LEDE_MAX and 4000-code-point
+        // body prefix (contentHead), so no bio boilerplate reaches a feed reader.
+        description: resolvePostLede({
+          excerpt: post.excerpt,
+          content: post.contentHead,
+          metaDescription: post.metaDescription,
+        }),
         pubDate: itemDate(post).toISOString(),
         author: post.author?.name || 'Richard Hudson',
         category: post.category?.name || 'Revenue Operations',

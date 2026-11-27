@@ -27,7 +27,7 @@ import { createBlogPostSchema, PostStatusSchema } from '@/lib/schemas'
 import { SITE_ORIGIN, canonicalUrl } from '@/lib/absolute-url'
 import { BLOG_POST_COLUMNS } from '@/lib/blog-columns'
 import { normalizeSeoTitle } from '@/lib/post-title'
-import { normalizeStoredSeoText } from '@/lib/blog-excerpt'
+import { fitStoredText, normalizeStoredSeoText, STORED_TEXT_LIMITS } from '@/lib/blog-excerpt'
 
 // POST/PUT contract asymmetry (kept here so a future admin client knows
 // what to send):
@@ -265,14 +265,23 @@ export async function POST(request: NextRequest) {
         metaDescription: seoText.metaDescription,
         keywords: body.keywords,
         canonicalUrl: body.canonicalUrl,
-        ogTitle: body.ogTitle,
-        ogDescription: body.ogDescription,
+        // ogTitle, ogDescription, twitterTitle and twitterDescription (and the
+        // images) are stored for API round-tripping and normalized on write, but
+        // intentionally not rendered: post pages derive every share surface from
+        // the one canonical normalized title, meta description and image
+        // (src/app/blog/[slug]/page.tsx), because separate per-surface values
+        // were how three SEO surfaces disagreed before.
+        ogTitle: fitStoredText(body.ogTitle, STORED_TEXT_LIMITS.ogTitle),
+        ogDescription: fitStoredText(body.ogDescription, STORED_TEXT_LIMITS.ogDescription),
         ogImage: body.ogImage,
-        twitterTitle: body.twitterTitle,
-        twitterDescription: body.twitterDescription,
+        twitterTitle: fitStoredText(body.twitterTitle, STORED_TEXT_LIMITS.twitterTitle),
+        twitterDescription: fitStoredText(
+          body.twitterDescription,
+          STORED_TEXT_LIMITS.twitterDescription
+        ),
         twitterImage: body.twitterImage,
         featuredImage: body.featuredImage,
-        featuredImageAlt: body.featuredImageAlt,
+        featuredImageAlt: fitStoredText(body.featuredImageAlt, STORED_TEXT_LIMITS.featuredImageAlt),
         readingTime,
         wordCount,
         publishedAt:
