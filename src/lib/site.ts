@@ -13,7 +13,6 @@ export const siteConfig: SiteConfig = {
   links: {
     github: CONTACT.github.url,
     linkedin: CONTACT.linkedin.url,
-    twitter: CONTACT.twitter.url,
   },
   author: {
     name: 'Richard Hudson',

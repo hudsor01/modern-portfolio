@@ -70,7 +70,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* IndieWeb identity verification (rel=me) — used by Mastodon, Bridgy, IndieAuth */}
         <link rel="me" href={CONTACT.linkedin.url} />
         <link rel="me" href={CONTACT.github.url} />
-        <link rel="me" href={CONTACT.twitter.url} />
 
         {/* No third-party preconnects: next/font self-hosts the fonts, next/image
             proxies remote images through /_next/image, and Vercel Analytics and

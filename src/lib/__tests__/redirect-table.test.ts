@@ -183,7 +183,10 @@ describe('REDIRECTS', () => {
   it('sends profile shortcuts to the CONTACT urls exactly', () => {
     expect(REDIRECT_MAP.get('/linkedin')).toBe(CONTACT.linkedin.url)
     expect(REDIRECT_MAP.get('/github')).toBe(CONTACT.github.url)
-    expect(REDIRECT_MAP.get('/twitter')).toBe(CONTACT.twitter.url)
+  })
+
+  it('sends the old /twitter shortcut to /contact (there is no X account)', () => {
+    expect(REDIRECT_MAP.get('/twitter')).toBe('/contact')
   })
 
   it('lists every redirected blog slug', () => {

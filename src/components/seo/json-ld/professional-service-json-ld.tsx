@@ -2,17 +2,18 @@
 // project's OWASP-compliant serializer. See src/lib/json-ld-utils.ts.
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
-import { CONTACT } from '@/lib/contact-info'
+import { CONTACT, SERVICE_AREA_PLACES } from '@/lib/contact-info'
 import { PERSON_ID, PERSON_SAME_AS } from './person-json-ld'
 
 /**
- * ProfessionalService JSON-LD — Dallas-targeted local SEO signal.
+ * ProfessionalService JSON-LD — local SEO signal for the home metro.
  *
  * Schema.org `ProfessionalService` is the appropriate subtype for a solo
  * RevOps consultant: more specific than `LocalBusiness`, less misleading
- * than `Organization`. `areaServed` enumerates the DFW cities Richard works
- * in, which is what unlocks local-pack eligibility for queries like
- * "revenue operations consultant Dallas".
+ * than `Organization`. `areaServed` enumerates the cities and metro region
+ * Richard works in (SERVICE_AREA_PLACES, the same list /contact names), which
+ * is what unlocks local-pack eligibility for "revenue operations consultant
+ * <city>" queries.
  */
 export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) {
   // Extracted so each Service.provider in makesOffer references the same
@@ -40,12 +41,7 @@ export function ProfessionalServiceJsonLd({ nonce }: { nonce?: string | null }) 
       addressRegion: CONTACT.location.region,
       addressCountry: CONTACT.location.country,
     },
-    areaServed: [
-      { '@type': 'City', name: 'Dallas' },
-      { '@type': 'City', name: 'Fort Worth' },
-      { '@type': 'City', name: 'Frisco' },
-      { '@type': 'AdministrativeArea', name: 'Dallas-Fort Worth Metroplex' },
-    ],
+    areaServed: SERVICE_AREA_PLACES.map((place) => ({ ...place })),
     // serviceType is invalid on ProfessionalService (inherits LocalBusiness,
     // not Service). Express services via makesOffer → Offer → itemOffered →
     // Service, with provider attached to each Service (where it's valid).

@@ -10,7 +10,7 @@ import { WhatIBring } from '@/components/about/what-i-bring'
 import { Button } from '@/components/ui/button'
 import { ArrowRight, Mail } from 'lucide-react'
 import Link from 'next/link'
-import { CONTACT } from '@/lib/contact-info'
+import { CONTACT, SERVICE_METRO, SERVICE_REGION } from '@/lib/contact-info'
 import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
@@ -63,7 +63,7 @@ const CERTIFICATIONS = [
 const PERSONAL_INFO = {
   name: 'Richard Hudson',
   title: 'Revenue Operations Professional',
-  location: `${CONTACT.location.display} • Dallas-Fort Worth Metroplex • Remote & On-Site`,
+  location: `${CONTACT.location.display} • ${SERVICE_REGION} • Remote & On-Site`,
   email: CONTACT.email,
   bio: `Started my career untangling spreadsheet chaos at a 50-person startup. Built my first automated pipeline with zero engineering support—just Excel, determination, and 3 YouTube tutorials.
 
@@ -77,7 +77,7 @@ export const metadata: Metadata = generateMetadata(
   'About: Revenue Operations Professional',
   // ~155 characters: Google truncates snippets beyond that, so the old 424-character
   // description lost everything after the first sentence.
-  `Revenue operations professional in Dallas-Fort Worth with ${STAT_VALUES.years} years of experience. Salesloft and HubSpot certified; ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects.`,
+  `Revenue operations professional in ${SERVICE_METRO} with ${STAT_VALUES.years} years of experience. Salesloft and HubSpot certified; ${STAT_VALUES.revenue} revenue impact across ${PROJECT_COUNT} projects.`,
   '/about'
 )
 

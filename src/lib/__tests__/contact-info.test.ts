@@ -2,7 +2,15 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { CONTACT, mailtoHref, SERVICE_AREA, telHref } from '@/lib/contact-info'
+import {
+  CONTACT,
+  mailtoHref,
+  SERVICE_AREA,
+  SERVICE_AREA_PLACES,
+  SERVICE_METRO,
+  SERVICE_REGION,
+  telHref,
+} from '@/lib/contact-info'
 import { REDIRECT_MAP } from '@/lib/redirects'
 import { siteConfig } from '@/lib/site'
 
@@ -28,7 +36,7 @@ const ROOT = process.cwd()
  *   like __tests__), README.md, SECURITY.md, CLAUDE.md and .planning/ (prose
  *   docs outside the build).
  * - Allowed file: src/lib/contact-info.ts (the source itself).
- * - src/data/redirects.json is scanned with only its three profile
+ * - src/data/redirects.json is scanned with only its two profile
  *   destinations removed: JSON cannot import CONTACT, and 'profile redirects
  *   equal the CONTACT urls' pins those values. Any other literal in it (a
  *   "why" string, a new entry) is still caught.
@@ -38,7 +46,7 @@ const SCANNED_TYPES = /\.(ts|tsx|js|mjs|json|css|md|txt)$/
 const SKIPPED_DIRS = new Set(['__tests__', 'node_modules', '.next'])
 const ALLOWED_FILES = new Set([join('src', 'lib', 'contact-info.ts')])
 const REDIRECTS_JSON = join('src', 'data', 'redirects.json')
-const PINNED_PROFILE_URLS = [CONTACT.github.url, CONTACT.linkedin.url, CONTACT.twitter.url]
+const PINNED_PROFILE_URLS = [CONTACT.github.url, CONTACT.linkedin.url]
 
 /** File text as the scan sees it: redirects.json minus its CONTACT-pinned destinations. */
 function scannedText(file: string, text = readFileSync(join(ROOT, file), 'utf8')): string {
@@ -76,11 +84,13 @@ describe('CONTACT', () => {
     expect(CONTACT.linkedin.display).toBe('linkedin.com/in/hudsor01')
     expect(CONTACT.github.url).toBe('https://github.com/hudsor01')
     expect(CONTACT.github.display).toBe('github.com/hudsor01')
-    expect(CONTACT.twitter.url).toBe('https://x.com/hudsor01')
-    expect(CONTACT.twitter.handle).toBe('@hudsor01')
     expect(CONTACT.github.username).toBe('hudsor01')
     expect(CONTACT.linkedin.username).toBe('hudsor01')
-    expect(CONTACT.twitter.username).toBe('hudsor01')
+  })
+
+  it('lists no X/Twitter profile (the owner has no account)', () => {
+    expect(Object.keys(CONTACT)).not.toContain('twitter')
+    expect(Object.keys(siteConfig.links)).not.toContain('twitter')
   })
 
   it('derives mailto and tel hrefs', () => {
@@ -96,7 +106,6 @@ describe('CONTACT', () => {
   it('feeds siteConfig', () => {
     expect(siteConfig.links.github).toBe(CONTACT.github.url)
     expect(siteConfig.links.linkedin).toBe(CONTACT.linkedin.url)
-    expect(siteConfig.links.twitter).toBe(CONTACT.twitter.url)
     expect(siteConfig.author.email).toBe(CONTACT.email)
   })
 })
@@ -119,7 +128,10 @@ describe('static files agree with CONTACT', () => {
   it('profile redirects equal the CONTACT urls', () => {
     expect(REDIRECT_MAP.get('/github')).toBe(CONTACT.github.url)
     expect(REDIRECT_MAP.get('/linkedin')).toBe(CONTACT.linkedin.url)
-    expect(REDIRECT_MAP.get('/twitter')).toBe(CONTACT.twitter.url)
+  })
+
+  it('sends the old /twitter shortcut to the contact page, internally', () => {
+    expect(REDIRECT_MAP.get('/twitter')).toBe('/contact')
   })
 
   it('vercel.json has no redirects', () => {
@@ -242,5 +254,146 @@ describe('service area', () => {
     )
     expect(source).toContain('Based in {CONTACT.location.city}, serving {SERVICE_AREA} — remote')
     expect(source).not.toMatch(/Fort Worth|Frisco|Metroplex/)
+  })
+})
+
+describe('no X/Twitter profile', () => {
+  // The owner has no X account; x.com/hudsor01 404s. Every file that ships or
+  // documents the site is scanned (text types only), so the profile URL or
+  // handle cannot come back in a link, sameAs, rel=me, twitter:creator,
+  // llms.txt or the README. __tests__ hold oracle literals and are skipped;
+  // dotfiles (.env*, .git, .next) are never read.
+  const PROFILE = /\b(?:x|twitter)\.com\/(?:#!\/)?hudsor01\b/i
+  const HANDLE = /(?<![\w.@-])@hudsor01\b/i
+  const ROOTS = [
+    'src',
+    'drizzle',
+    'scripts',
+    'e2e',
+    'public',
+    'next.config.js',
+    'vercel.json',
+    'package.json',
+    'README.md',
+    'SECURITY.md',
+  ]
+  const TEXT = /\.(ts|tsx|js|mjs|cjs|json|css|md|txt|xml|html|webmanifest)$/
+  const files = (path: string): string[] => {
+    if (!statSync(path).isDirectory()) return TEXT.test(path) ? [path] : []
+    return readdirSync(path).flatMap((name) =>
+      name.startsWith('.') && name !== '.well-known'
+        ? []
+        : SKIPPED_DIRS.has(name)
+          ? []
+          : files(join(path, name))
+    )
+  }
+
+  it.each([
+    ['an x.com profile', 'https://x.com/hudsor01'],
+    ['a twitter.com profile', 'https://twitter.com/Hudsor01'],
+    ['a hashbang profile', 'twitter.com/#!/hudsor01'],
+    ['a handle', "creator: '@hudsor01'"],
+  ])('detects %s', (_label, text) => {
+    expect(PROFILE.test(text) || HANDLE.test(text)).toBe(true)
+  })
+
+  it('does not flag the email or other profiles', () => {
+    for (const text of ['hudsor01@icloud.com', 'github.com/hudsor01', 'linkedin.com/in/hudsor01'])
+      expect(PROFILE.test(text) || HANDLE.test(text)).toBe(false)
+  })
+
+  it('no shipped or documented file links an X/Twitter profile or handle', () => {
+    const scanned = ROOTS.flatMap((root) => files(join(ROOT, root))).map((f) => relative(ROOT, f))
+    expect(scanned).toContain(join('public', 'llms.txt'))
+    expect(scanned).toContain('README.md')
+    const offenders = scanned.filter((file) => {
+      const text = readFileSync(join(ROOT, file), 'utf8')
+      return PROFILE.test(text) || HANDLE.test(text)
+    })
+    expect(offenders).toEqual([])
+  })
+})
+
+describe('city names have one source', () => {
+  // The served area lives in src/lib/contact-info.ts (SERVICE_AREA_PLACES,
+  // SERVICE_METRO, SERVICE_REGION). A bare city or metro name anywhere else in
+  // the scanned source is a second copy that can drift, unless it is one of
+  // these intentional, independent facts (matched as exact phrases per file):
+  const CITY = /\b(?:Dallas|Fort\s+Worth|Frisco|DFW)\b/i
+  const ALLOWED_PHRASES: ReadonlyArray<readonly [file: string, phrase: string, why: string]> = [
+    [
+      join('src', 'app', 'resume', 'data', 'constants.ts'),
+      "'Dallas-Fort Worth, TX'",
+      'HomeVestors role location',
+    ],
+    [
+      join('src', 'app', 'resume', 'data', 'constants.ts'),
+      "'Fort Worth, TX'",
+      'National Guard role location',
+    ],
+    [
+      join('src', 'app', 'resume', 'data', 'constants.ts'),
+      'The University of Texas at Dallas',
+      'school name',
+    ],
+    [
+      join('src', 'components', 'seo', 'json-ld', 'person-json-ld.tsx'),
+      'The University of Texas at Dallas',
+      'school name',
+    ],
+  ]
+  const masked = (file: string, text: string) =>
+    ALLOWED_PHRASES.filter(([f]) => f === file).reduce(
+      (rest, [, phrase]) => rest.replaceAll(phrase, ''),
+      normalizeSpace(text)
+    )
+
+  it.each([
+    ['a city', "{ name: 'Frisco' }"],
+    ['the metro', 'Professional in Dallas-Fort Worth.'],
+    ['a wrapped city', 'Fort\n  Worth'],
+    ['the abbreviation', 'DFW cities'],
+  ])('detects %s', (_label, text) => {
+    expect(CITY.test(normalizeSpace(text))).toBe(true)
+  })
+
+  it('allows only the listed phrases, each of which still exists', () => {
+    for (const [file, phrase] of ALLOWED_PHRASES) {
+      expect(
+        normalizeSpace(readFileSync(join(ROOT, file), 'utf8')),
+        `${file}: ${phrase}`
+      ).toContain(phrase)
+    }
+  })
+
+  it('no scanned file outside contact-info.ts names a city, except the allow-list', () => {
+    const offenders = scanFiles(SCAN_ROOTS)
+      .map((file) => relative(ROOT, file))
+      .filter((file) => !ALLOWED_FILES.has(file))
+      .filter((file) => CITY.test(masked(file, readFileSync(join(ROOT, file), 'utf8'))))
+    expect(
+      offenders,
+      `use SERVICE_AREA_PLACES / SERVICE_METRO / SERVICE_REGION from '@/lib/contact-info' (or allow-list an intentional fact) in: ${offenders.join(', ')}`
+    ).toEqual([])
+  })
+
+  it('areaServed is the SERVICE_AREA_PLACES list, and SERVICE_AREA reads from it', () => {
+    expect(SERVICE_AREA_PLACES).toEqual([
+      { '@type': 'City', name: 'Dallas' },
+      { '@type': 'City', name: 'Fort Worth' },
+      { '@type': 'City', name: 'Frisco' },
+      { '@type': 'AdministrativeArea', name: 'Dallas-Fort Worth Metroplex' },
+    ])
+    expect(SERVICE_METRO).toBe('Dallas-Fort Worth')
+    expect(SERVICE_REGION).toBe('Dallas-Fort Worth Metroplex')
+    const source = readFileSync(
+      join(ROOT, 'src/components/seo/json-ld/professional-service-json-ld.tsx'),
+      'utf8'
+    )
+    expect(source).toContain('areaServed: SERVICE_AREA_PLACES.map(')
+    expect(SERVICE_AREA).toBe(
+      'Dallas, Fort Worth, Frisco, and the broader Dallas-Fort Worth Metroplex'
+    )
   })
 })

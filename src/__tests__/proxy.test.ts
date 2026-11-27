@@ -26,6 +26,8 @@ const SAME_ORIGIN_REDIRECTS: Array<[string, string]> = [
   ['/blog/some-post/', `${ORIGIN}/blog/some-post`],
   ['/Home', `${ORIGIN}/`],
   ['/HOME/', `${ORIGIN}/`],
+  ['/Twitter', `${ORIGIN}/contact`],
+  ['/twitter/', `${ORIGIN}/contact`],
   ['/home/', `${ORIGIN}/`],
   ['/Blog?page=0', `${ORIGIN}/blog`],
   ['/blog/?page=0', `${ORIGIN}/blog`],
@@ -44,7 +46,6 @@ const EXTERNAL_REDIRECTS: Array<[string, string]> = [
   ['/github/', CONTACT.github.url],
   ['/Github?x=1', `${CONTACT.github.url}?x=1`],
   ['/Linkedin/', CONTACT.linkedin.url],
-  ['/Twitter', CONTACT.twitter.url],
 ]
 
 describe('proxy single-hop redirect', () => {

@@ -5,11 +5,12 @@ import { BreadcrumbListJsonLd } from '@/components/seo/json-ld/breadcrumb-json-l
 import ContactPageClient from './contact-client'
 import { getFeaturedProjects } from '@/lib/projects'
 import { canonicalUrl, SITE_ORIGIN } from '@/lib/absolute-url'
+import { SERVICE_METRO } from '@/lib/contact-info'
 
 export const dynamic = 'force-static'
 export const metadata = generateMetadata(
   'Contact: Revenue Operations Consulting',
-  'Get in touch with Richard Hudson for Revenue Operations consulting, sales optimization, and business growth strategies in Dallas-Fort Worth.',
+  `Get in touch with Richard Hudson for Revenue Operations consulting, sales optimization, and business growth strategies in ${SERVICE_METRO}.`,
   '/contact'
 )
 
