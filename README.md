@@ -237,7 +237,8 @@ Vercel handles builds on push:
   command `bun run build`, region `iad1`)
 - **Build**: Next.js 16 with React Compiler enabled
   ([`next.config.js`](next.config.js)); `output: 'standalone'`
-- **Preview deploys** are generated for every pull request
+- **Preview deploys** are generated for pull requests, except from
+  `dependabot/**` branches (`git.deploymentEnabled` in `vercel.json`)
 - **Environment variables** are set via the Vercel dashboard (or
   `vercel env add`). `.env.local` is never uploaded
 
