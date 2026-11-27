@@ -77,6 +77,23 @@ describe('post metadata title normalization', () => {
     expect(m.tw).toBe('Forecast Accuracy Starts With Data Hygiene | Richard Hudson')
   })
 
+  it('renders a title that fits only without the brand in full, unbranded, on all three', async () => {
+    const mdf = 'Running an MDF Program Finance Can Actually Trust'
+    // Production stores metaTitle equal to the title; a missing one behaves the same.
+    for (const meta of [mdf, null]) {
+      const m = await metaFor(meta, mdf)
+      expect(m.title).toEqual({ absolute: mdf })
+      expect(m.og).toBe(mdf)
+      expect(m.tw).toBe(mdf)
+    }
+  })
+
+  it('falls back to "Blog" when the stored title is only the brand', async () => {
+    const m = await metaFor(null, '| Richard Hudson')
+    expect(m.title).toBe('Blog')
+    expect(m.og).toBe('Blog | Richard Hudson')
+  })
+
   it('keeps a compliant stored metaTitle and brands the same value for og/twitter', async () => {
     const m = await metaFor('Salesloft Cadences That Get Replies', FULL_TITLE)
     expect(m.title).toBe('Salesloft Cadences That Get Replies')

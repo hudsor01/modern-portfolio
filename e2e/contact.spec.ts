@@ -117,3 +117,19 @@ test('contact Featured Work lists three previews as aria-hidden thumbnails', asy
   await expect(page.getByText('$240K')).toHaveCount(0)
   expect(hits.serverActions, 'no server action may reach the network').toBe(0)
 })
+
+// The owner has no X account: no page may link a profile, list it in sameAs or
+// rel=me, or name a twitter:creator/site handle. Raw server HTML, so JSON-LD and
+// <head> links are covered too.
+test.describe('no X/Twitter profile', () => {
+  for (const path of ['/', '/about', '/contact', '/blog', '/resume']) {
+    test(`${path} carries no x.com or twitter.com profile`, async ({ request }) => {
+      const res = await request.get(path)
+      expect(res.status()).toBe(200)
+      const html = await res.text()
+      expect(html).not.toMatch(/(?:x|twitter)\.com\/(?:#!\/)?hudsor01/i)
+      expect(html).not.toMatch(/name="twitter:(?:creator|site)"/)
+      expect(html).toContain('name="twitter:card"')
+    })
+  }
+})

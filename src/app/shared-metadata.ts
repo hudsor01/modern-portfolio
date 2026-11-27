@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import { canonicalUrl, SITE_ORIGIN, OG_IMAGE_SIZE, ogImageUrl } from '@/lib/absolute-url'
 import { PROJECT_COUNT } from '@/data/projects'
 import { REVENUE_IMPACT } from '@/lib/stats'
-import { CONTACT } from '@/lib/contact-info'
 import { brandTitle } from '@/lib/brand'
+import { SERVICE_METRO } from '@/lib/contact-info'
 
-const SITE_DESCRIPTION = `Revenue Operations Professional in Dallas-Fort Worth. Salesloft Admin (L1/L2) and HubSpot RevOps certified. ${REVENUE_IMPACT} revenue impact across ${PROJECT_COUNT} projects.`
+const SITE_DESCRIPTION = `Revenue Operations Professional in ${SERVICE_METRO}. Salesloft Admin (L1/L2) and HubSpot RevOps certified. ${REVENUE_IMPACT} revenue impact across ${PROJECT_COUNT} projects.`
 
 export const baseMetadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -40,7 +40,6 @@ export const baseMetadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    creator: CONTACT.twitter.handle,
     title: 'Richard Hudson | Revenue Operations Professional',
     description: SITE_DESCRIPTION,
     images: ['/images/richard.jpg'],

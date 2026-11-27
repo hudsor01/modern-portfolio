@@ -20,6 +20,10 @@ const SINGLE_HOP: Array<[string, string]> = [
   ],
   ['/api/health/', '/api/health'],
   ['/llms.txt/', '/llms.txt'],
+  ['/favicon.ico/', '/favicon.ico'],
+  // No X account: the old profile shortcut lands on the contact page.
+  ['/twitter', '/contact'],
+  ['/Twitter/', '/contact'],
 ]
 
 // Landing pages that answer 200 only with a database: /api/health is 503 when

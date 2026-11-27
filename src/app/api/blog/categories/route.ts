@@ -91,8 +91,8 @@ export async function POST(request: NextRequest) {
           fitStoredText(body.description, STORED_TEXT_LIMITS.taxonomyDescription) ?? null,
         color: body.color,
         icon: body.icon ?? null,
-        // Any length is accepted and stored within the search budget (<= 43),
-        // the same never-reject rule as post SEO titles.
+        // Any length is accepted and stored within the search budget, the
+        // same never-reject rule as post SEO titles (src/lib/post-title.ts).
         metaTitle: body.metaTitle ? normalizeSeoTitle(body.metaTitle, body.name) : null,
         metaDescription: fitMetaDescription(body.metaDescription) ?? null,
         keywords: body.keywords,

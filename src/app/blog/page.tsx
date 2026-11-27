@@ -28,7 +28,6 @@ import {
   parsePageParam,
 } from '@/lib/blog-pagination'
 import { resolveExcerpt } from '@/lib/blog-excerpt'
-import { CONTACT } from '@/lib/contact-info'
 import { getCategoryChipLabel, resolveListCovers } from '@/lib/blog-list'
 import { BLOG_CONTENT_HEAD_EXTRAS } from '@/lib/blog-content-head'
 import { displayPostTitle } from '@/lib/brand'
@@ -102,7 +101,6 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      creator: CONTACT.twitter.handle,
       title: brandTitle(title),
       description: BLOG_DESCRIPTION,
       images: [BLOG_INDEX_OG_IMAGE_URL],
@@ -150,7 +148,8 @@ function toListPost(row: CardRow): BlogListPost {
   return {
     id: row.id,
     slug: row.slug,
-    title: row.title,
+    // A stored brand suffix never shows on a visible title.
+    title: displayPostTitle(row.title),
     excerpt: resolveExcerpt({ excerpt: row.excerpt, content: row.contentHead }) || null,
     featuredImage: row.featuredImage,
     publishedAt: row.publishedAt?.toISOString() ?? null,

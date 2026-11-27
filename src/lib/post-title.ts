@@ -100,26 +100,65 @@ function cutAtWord(s: string, max: number): string {
 }
 
 /**
- * The SEO title (`metaTitle`) to store for a post, at most SEO_TITLE_MAX
- * characters, so `<title> | Richard Hudson` fits search results (see the
- * pipeline title spec). This is the single title rule: applied on write by
- * POST/PUT /api/blog (and categories) so whatever the publishing pipeline sends
- * is stored compliant, AND at read time for the post page <title>, og:title and
- * twitter:title so legacy stored values render compliant without a data migration.
- *
- * In order: the given SEO title if it fits; else the post title if it fits;
- * else the SEO title without a trailing "(…)"; else its part before ": "; else
- * a whole-word cut. A missing SEO title starts from the post title.
+ * A resolved search-result title. `branded` titles render as
+ * `<text> | Richard Hudson` (≤ TITLE_BUDGET); unbranded ones are the full post
+ * title on its own (≤ TITLE_BUDGET), used when the title fits the budget alone
+ * but not with the brand, so a search result never shows a word-cut title.
  */
-export function normalizeSeoTitle(metaTitle: string | null | undefined, title: string): string {
+export interface SeoTitle {
+  text: string
+  branded: boolean
+}
+
+/**
+ * The single title rule, applied on write by POST/PUT /api/blog (and
+ * categories) so whatever the publishing pipeline sends is stored compliant,
+ * AND at read time for the post and category page <title>, og:title and
+ * twitter:title so legacy stored values render compliant without a data
+ * migration.
+ *
+ * In order: the given SEO title if it fits with the brand; else the post title
+ * if it fits with the brand; else the full post title WITHOUT the brand if it
+ * fits the budget alone; else (branded) the SEO title without a trailing
+ * "(…)", its part before ": ", or a whole-word cut. A missing SEO title starts
+ * from the post title. Idempotent: resolving the returned `text` against the
+ * same post title yields the same result, so what the write path stores renders
+ * unchanged.
+ */
+export function resolveSeoTitle(metaTitle: string | null | undefined, title: string): SeoTitle {
   const max = SEO_TITLE_MAX
   const plain = tidy(stripBrandSuffix(title))
   const seo = tidy(stripBrandSuffix(metaTitle || '')) || plain
-  if (seo.length <= max) return seo
-  if (plain && plain.length <= max) return plain
+  const branded = (text: string): SeoTitle => ({ text, branded: true })
+  if (seo.length <= max) return branded(seo)
+  if (plain && plain.length <= max) return branded(plain)
+  if (plain && plain.length <= TITLE_BUDGET) return { text: plain, branded: false }
   const noParen = tidy(seo.replace(/\s*\([^)]*\)\s*$/, ''))
-  if (noParen && noParen.length <= max) return noParen
+  if (noParen && noParen.length <= max) return branded(noParen)
   const head = tidy(seo.split(': ')[0] ?? '')
-  if (head.length >= 12 && head.length <= max) return head
-  return cutAtWord(noParen || seo, max)
+  if (head.length >= 12 && head.length <= max) return branded(head)
+  return branded(cutAtWord(noParen || seo, max))
+}
+
+/**
+ * The SEO title (`metaTitle`) to store: `resolveSeoTitle(...).text`. At most
+ * SEO_TITLE_MAX characters, except a full post title that fits TITLE_BUDGET on
+ * its own (stored whole so the read path keeps rendering it unbranded).
+ */
+export function normalizeSeoTitle(metaTitle: string | null | undefined, title: string): string {
+  return resolveSeoTitle(metaTitle, title).text
+}
+
+/**
+ * Next.js metadata fields for a resolved title: a bare `title` the root
+ * template brands, or `{ absolute }` for an unbranded one, plus the matching
+ * og:title/twitter:title, so all three always agree.
+ */
+export function seoTitleMetadata(resolved: SeoTitle): {
+  title: string | { absolute: string }
+  shareTitle: string
+} {
+  return resolved.branded
+    ? { title: resolved.text, shareTitle: brandTitle(resolved.text) }
+    : { title: { absolute: resolved.text }, shareTitle: resolved.text }
 }

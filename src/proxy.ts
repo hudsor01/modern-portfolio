@@ -71,8 +71,11 @@ export const config = {
   // proxy() conditionally rather than excluding the path here. Pairs with
   // the route-specific X-Frame-Options: SAMEORIGIN override in next.config.js
   // — both rules must move together; relaxing one in isolation re-blocks
-  // the embed.
+  // the embed. `favicon\.ico$` is anchored like the extensions, so only the
+  // exact file skips the proxy: `/favicon.ico/` reaches it and gets the same
+  // one-hop 308 to the slashless path as `/llms.txt/` or `/x.png/`, instead of
+  // a duplicate 200.
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf)$).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico$|.*\\.(?:svg|png|jpg|jpeg|gif|webp|pdf)$).*)',
   ],
 }

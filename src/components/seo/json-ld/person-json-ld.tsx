@@ -4,7 +4,7 @@
  */
 import { safeJsonLdStringify } from '@/lib/json-ld-utils'
 import { SITE_ORIGIN } from '@/lib/absolute-url'
-import { CONTACT } from '@/lib/contact-info'
+import { CONTACT, SERVICE_METRO, SERVICE_REGION } from '@/lib/contact-info'
 import { STAT_LABELS, STAT_VALUES } from '@/lib/stats'
 
 /** Stable node id, so other JSON-LD (ProfilePage on /about) can reference this Person. */
@@ -19,11 +19,7 @@ export const PERSON_EMPLOYER = {
 } as const
 
 /** External profiles, shared with the /about ProfilePage. */
-export const PERSON_SAME_AS = [
-  CONTACT.linkedin.url,
-  CONTACT.github.url,
-  CONTACT.twitter.url,
-] as const
+export const PERSON_SAME_AS = [CONTACT.linkedin.url, CONTACT.github.url] as const
 
 export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
   const jsonLd = {
@@ -33,7 +29,7 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     name: 'Richard Hudson',
     alternateName: 'Richard W. Hudson Jr.',
     jobTitle: PERSON_JOB_TITLE,
-    description: `Data Analyst at HomeVestors of America in Dallas-Fort Worth, with a background in revenue operations, sales automation and partnership program development. Salesloft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. ${STAT_VALUES.revenue} revenue impact, ${STAT_VALUES['transaction-growth']} transaction growth.`,
+    description: `Data Analyst at HomeVestors of America in ${SERVICE_METRO}, with a background in revenue operations, sales automation and partnership program development. Salesloft Admin Certified (Level 1 & 2) and HubSpot Revenue Operations Certified. ${STAT_VALUES.revenue} revenue impact, ${STAT_VALUES['transaction-growth']} transaction growth.`,
     url: SITE_ORIGIN,
     image: `${SITE_ORIGIN}/images/richard.jpg`,
     sameAs: [...PERSON_SAME_AS],
@@ -47,12 +43,12 @@ export function PersonJsonLd({ nonce }: { nonce?: string | null }) {
     telephone: CONTACT.phone.international,
     workLocation: {
       '@type': 'Place',
-      name: 'Dallas-Fort Worth Metroplex',
+      name: SERVICE_REGION,
       address: {
         '@type': 'PostalAddress',
-        addressLocality: 'Dallas-Fort Worth',
-        addressRegion: 'TX',
-        addressCountry: 'US',
+        addressLocality: SERVICE_METRO,
+        addressRegion: CONTACT.location.region,
+        addressCountry: CONTACT.location.country,
       },
     },
     worksFor: { ...PERSON_EMPLOYER },

@@ -130,4 +130,67 @@ describe('category page metadata', () => {
     expect(og[0]?.url).toContain('/api/og?title=Revenue+Operations+Articles')
     expect(meta.twitter?.images).toEqual([og[0]?.url])
   })
+
+  const metaForName = async (name: string) => {
+    mocks.findFirst.mockResolvedValue({
+      id: 'c1',
+      name,
+      slug: 'c',
+      description: null,
+      postCount: 0,
+      posts: [],
+    })
+    const { generateMetadata } = await import('../page')
+    const meta = await generateMetadata({ params: Promise.resolve({ slug: 'c' }) })
+    return {
+      title: meta.title,
+      og: meta.openGraph?.title,
+      tw: (meta.twitter as { title?: string } | null | undefined)?.title,
+    }
+  }
+
+  it('brands a category title that fits with the brand', async () => {
+    const m = await metaForName('Revenue Operations')
+    expect(m.title).toBe('Revenue Operations: Articles')
+    expect(m.og).toBe('Revenue Operations: Articles | Richard Hudson')
+    expect(m.tw).toBe(m.og)
+  })
+
+  it('renders a title that fits only without the brand in full, unbranded', async () => {
+    const name = 'Revenue Operations and Sales Technology'
+    const m = await metaForName(name)
+    expect(m.title).toEqual({ absolute: `${name}: Articles` })
+    expect(m.og).toBe(`${name}: Articles`)
+    expect(m.tw).toBe(m.og)
+  })
+
+  it('budgets a 60-char category name to a whole-word branded title within 60', async () => {
+    const name = 'Revenue Operations Sales Technology and Marketing Attribution'.slice(0, 60)
+    expect(name).toHaveLength(60)
+    const m = await metaForName(name)
+    expect(typeof m.title).toBe('string')
+    const full = `${m.title as string} | Richard Hudson`
+    expect(full.length).toBeLessThanOrEqual(60)
+    expect(m.og).toBe(full)
+    expect(m.tw).toBe(full)
+    expect(`${name} `.startsWith(`${m.title as string} `)).toBe(true)
+  })
+
+  it('shows a post title without a stored brand suffix on its card', async () => {
+    mocks.findFirst.mockResolvedValue({
+      id: 'c1',
+      name: 'Revenue Operations',
+      slug: 'revenue-operations',
+      description: null,
+      postCount: 1,
+      posts: [{ ...post(1, 'a'), title: 'Pipeline Velocity | Richard Hudson' }],
+    })
+    const tree = await BlogCategoryPage({ params: Promise.resolve({ slug: 'revenue-operations' }) })
+    const titles: string[] = []
+    walk(tree, (el) => {
+      if (typeof el.type === 'function' && el.type.name === 'CardTitle')
+        titles.push(String(el.props.children))
+    })
+    expect(titles).toEqual(['Pipeline Velocity'])
+  })
 })

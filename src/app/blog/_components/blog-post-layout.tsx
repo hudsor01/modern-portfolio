@@ -10,6 +10,7 @@ import type { ContentType } from '@/types/blog'
 import { Badge } from '@/components/ui/badge'
 import { CATEGORY_CHIP_CLASSES } from '@/lib/blog-list'
 import { normalizeTitle } from '@/lib/markdown'
+import { displayPostTitle } from '@/lib/brand'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ReadComplete } from '@/components/analytics/read-complete'
@@ -29,6 +30,8 @@ function getAuthorInitials(name: string): string {
 }
 
 export function BlogPostLayout({ post }: PostLayoutProps) {
+  // The visible title never shows a stored brand suffix.
+  const title = displayPostTitle(post.title)
   const publishedDate = post.publishedAt ? formatDate(post.publishedAt, { month: 'long' }) : null
   const wordCount = post.wordCount ?? post.content.split(/\s+/).filter(Boolean).length
   const readingTime = post.readingTime ?? Math.max(1, Math.ceil(wordCount / 200))
@@ -38,7 +41,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
   // A caption that only repeats the title is a third copy of it above the fold.
   const showCaption =
     Boolean(post.featuredImageAlt) &&
-    normalizeTitle(post.featuredImageAlt ?? '') !== normalizeTitle(post.title)
+    normalizeTitle(post.featuredImageAlt ?? '') !== normalizeTitle(title)
 
   // Build detail items, filtering out nulls
   const detailItems: Array<{ label: string; value: string }> = []
@@ -86,7 +89,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
 
               {/* Title */}
               <h1 className="heading-page mt-6 mb-4">
-                <InlineMarkdown value={post.title} />
+                <InlineMarkdown value={title} />
               </h1>
 
               {/* Excerpt: resolveExcerpt output (getBlogPost), already plain text, so it
@@ -114,8 +117,8 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
             <figure className="relative mt-10 aspect-video overflow-hidden rounded-md border border-border shadow-sm">
               <BlogFeaturedImage
                 src={post.featuredImage}
-                alt={post.featuredImageAlt || post.title}
-                postTitle={post.title}
+                alt={post.featuredImageAlt || title}
+                postTitle={title}
                 postCategory={post.category?.name}
                 fill
                 className="object-cover"
@@ -137,7 +140,7 @@ export function BlogPostLayout({ post }: PostLayoutProps) {
             <BlogPostArticle
               content={post.content}
               contentType={post.contentType as ContentType}
-              title={post.title}
+              title={title}
             />
             <ReadComplete />
             <ViewBeacon slug={post.slug} />

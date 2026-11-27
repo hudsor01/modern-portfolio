@@ -300,7 +300,7 @@ describe('POST /api/blog', () => {
     status: 'DRAFT' as const,
   }
 
-  it('stores an SEO title within 43 chars, derived when missing or too long', async () => {
+  it('stores an SEO title within the budget, derived when missing or too long', async () => {
     await POST(
       reqPost({
         ...validBody,
@@ -318,6 +318,13 @@ describe('POST /api/blog', () => {
     dbMocks.insertVoid.mockResolvedValue(undefined)
     await POST(reqPost(validBody))
     expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({ metaTitle: 'Hello World' })
+  })
+
+  it('stores a title that fits only without the brand whole, not word-cut', async () => {
+    const title = 'Running an MDF Program Finance Can Actually Trust'
+    const res = await POST(reqPost({ ...validBody, title }))
+    expect(res.status).toBe(201)
+    expect(dbMocks.insertValues.mock.calls[0]?.[0]).toMatchObject({ metaTitle: title })
   })
 
   it('accepts a metaTitle over 100 characters and stores it within 43', async () => {

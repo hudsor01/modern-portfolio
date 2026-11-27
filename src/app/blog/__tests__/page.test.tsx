@@ -232,6 +232,14 @@ describe('/blog index', () => {
     expect(JSON.stringify(props.posts)).not.toMatch(/content|author|email/i)
   })
 
+  it('lists a post title without a stored brand suffix', async () => {
+    mocks.postsFindMany.mockResolvedValue([
+      { ...cardRow(0), title: 'Pipeline Velocity | Richard Hudson' },
+    ])
+    const props = await renderPage()
+    expect(props.posts[0]?.title).toBe('Pipeline Velocity')
+  })
+
   it('gives later posts with a duplicate cover a generated og cover', async () => {
     const img = 'https://images.unsplash.com/photo-x'
     mocks.postsFindMany.mockResolvedValue([

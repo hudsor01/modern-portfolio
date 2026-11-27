@@ -66,6 +66,13 @@ describe('BlogPostLayout', () => {
     expect(container.querySelectorAll('aside img, aside [data-slot="avatar"]')).toHaveLength(0)
   })
 
+  it('never shows a stored brand suffix in the h1', () => {
+    const { container } = render(
+      <BlogPostLayout post={makePost({ title: 'Pipeline Velocity | Richard Hudson' })} />
+    )
+    expect(container.querySelector('h1')?.textContent).toBe('Pipeline Velocity')
+  })
+
   it('keeps a caption that adds information beyond the title', () => {
     const { container } = render(
       <BlogPostLayout

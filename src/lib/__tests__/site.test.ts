@@ -12,7 +12,6 @@ describe('siteConfig', () => {
   it('exposes social links', () => {
     expect(siteConfig.links.github).toMatch(/^https:\/\//)
     expect(siteConfig.links.linkedin).toMatch(/^https:\/\//)
-    expect(siteConfig.links.twitter).toMatch(/^https:\/\//)
   })
 
   it('author has name + email', () => {

@@ -58,7 +58,6 @@ const SAMPLE_AUTHORS = [
     bio: 'Revenue Operations Professional with expertise in data analytics, process optimization, and business intelligence. Passionate about turning data into actionable business insights.',
     avatar: '/images/richard.jpg',
     website: 'https://richardwhudsonjr.com',
-    twitter: CONTACT.twitter.username,
     linkedin: CONTACT.linkedin.url,
     github: CONTACT.github.username,
     metaDescription:

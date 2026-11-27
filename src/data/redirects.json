@@ -41,7 +41,7 @@
   },
   {
     "source": "/twitter",
-    "destination": "https://x.com/hudsor01",
-    "why": "Profile shortcut; destination must equal CONTACT.twitter.url, pinned by contact-info.test.ts. Moved from vercel.json."
+    "destination": "/contact",
+    "why": "Old profile shortcut kept so existing links still land somewhere useful. There is no X account, so it points at the contact page (internal, one hop); contact-info.test.ts fails if an X/Twitter profile URL returns."
   }
 ]

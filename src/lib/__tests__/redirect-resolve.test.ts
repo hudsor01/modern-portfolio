@@ -18,6 +18,9 @@ describe('resolveSingleHop', () => {
     ['/home/', '', '/', ''],
     ['/HOME/', '', '/', ''],
     ['/home', '?x=1', '/', '?x=1'],
+    ['/twitter', '', '/contact', ''],
+    ['/Twitter', '', '/contact', ''],
+    ['/TWITTER/', '?x=1', '/contact', '?x=1'],
     [
       '/blog/Revenue-Operations-Best-Practices-Complete-Guide/',
       '',
@@ -72,7 +75,6 @@ describe('resolveSingleHop', () => {
     ['/Github', '', CONTACT.github.url],
     ['/github', '?x=1', `${CONTACT.github.url}?x=1`],
     ['/Linkedin/', '', CONTACT.linkedin.url],
-    ['/Twitter', '', CONTACT.twitter.url],
   ])('sends %s%s to the external profile', (pathname, search, href) => {
     expect(resolve(pathname, search)).toEqual({ kind: 'external', href })
   })

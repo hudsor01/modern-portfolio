@@ -214,7 +214,7 @@ const nextConfig = {
 
   // One table: src/data/redirects.json (each entry's "why") plus the two blog
   // slug maps, validated by src/lib/redirect-table.mjs. /github, /linkedin and
-  // /twitter moved here from vercel.json so there is a single source. On Vercel
+  // /twitter (now to /contact) moved here from vercel.json so there is a single source. On Vercel
   // these match only the exact lowercase source, which is why the proxy
   // resolves mixed-case and slash variants in one hop.
   async redirects() {
